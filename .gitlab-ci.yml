@@ -1,0 +1,28 @@
+image: node:latest
+
+stages:
+  - test
+  - deploy
+  - invalidate-cdn
+
+test:
+  stage: test
+  script:
+    - yarn install --immutable
+    - yarn test
+
+deploy:
+  stage: deploy
+  script:
+    - yarn install --immutable
+    - yarn deploy
+  only:
+    - master
+
+deploy-prod:
+  stage: deploy
+  script:
+    - yarn install --immutable
+    - yarn deploy-prod
+  only:
+    - production

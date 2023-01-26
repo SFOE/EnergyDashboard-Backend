@@ -1,0 +1,51 @@
+import { SourceFiles } from '/opt/nodejs/source-files';
+
+export const DynamoDBTables: { [key in SourceFiles]: string } = {
+    [SourceFiles.FUELLUNGSGRAD_SPEICHERSEEN]: `fuellungsgrad-speicherseen`,
+    [SourceFiles.STROM_FUELLUNGSGRAD_SPEICHERSEEN_V2]: `fuellungsgrad-speicherseen-v2`,
+    [SourceFiles.FUELLSTAND_GASSPEICHER]: `fuellstand-gasspeicher`,
+    [SourceFiles.GAS_FUELLSTAND_GASSPEICHER_V2]: `fuellstand-gasspeicher-v2`,
+    [SourceFiles.DYNAMIC_TRANSLATIONS]: `dynamic-translations`,
+    [SourceFiles.STROM_IMPORT_EXPORT_HISTORICAL_VALUES]: `strom-import-export-historical-values`,
+    [SourceFiles.STROM_IMPORT_EXPORT_HISTORICAL_VALUES_V2]: `strom-import-export-historical-values-v2`,
+    [SourceFiles.STROM_IMPORT_EXPORT_NETTO]: `strom-import-export-netto`,
+    [SourceFiles.STROM_IMPORT_EXPORT_UEBERSICHT]: `strom-import-export-uebersicht`,
+    [SourceFiles.AMPEL]: `ampel`,
+    [SourceFiles.GAS_IMPORT_KARTE]: `gas-import-karte`,
+    [SourceFiles.GAS_IMPORT_HISTORICAL_VALUES]: `gas-import-historical-values`,
+    [SourceFiles.GAS_IMPORT_HISTORICAL_VALUES_V2]: `gas-import-historical-values-v2`,
+    [SourceFiles.STROM_PRODUKTIONSMIX]: `strom-produktionsmix`,
+    [SourceFiles.STROM_PRODUKTION_IMPORT_VERBRAUCH]: `strom-produktion-import-verbrauch`,
+    [SourceFiles.STROM_VERBRAUCH_HISTORICAL_VALUES]: `strom-verbrauch-historical-values`,
+    [SourceFiles.STROM_VERBRAUCH_LANDESVERBRAUCH_MIT_PROGNOSE_V2]: `strom-verbrauch-landesverbrauch-mit-prognose-v2`,
+    [SourceFiles.STROM_VERBRAUCH_ENDVERBRAUCH]: `strom-verbrauch-endverbrauch`,
+    [SourceFiles.STROM_VERBRAUCH_ENDVERBRAUCH_V2]: `strom-verbrauch-endverbrauch-v2`,
+    [SourceFiles.STROM_VERBRAUCH_LANDESVERBRAUCH]: `strom-verbrauch-landesverbrauch`,
+    [SourceFiles.STROM_VERBRAUCH_LANDESVERBRAUCH_VERGLEICH_V2]: `strom-verbrauch-landesverbrauch-vergleich-v2`,
+    [SourceFiles.STROM_SPARZIEL_ZIEL]: `strom-sparziel-ziel`,
+    [SourceFiles.STROM_SPARZIEL_AKTUELLE_EINSPARUNG]: `strom-sparziel-aktuelle-einsparung`,
+    [SourceFiles.STROM_SPARZIEL_AKTUELLE_EINSPARUNG_V2]: `strom-sparziel-aktuelle-einsparung-v2`,
+    [SourceFiles.GAS_SPARZIEL_ZIEL]: 'gas-sparziel-ziel',
+    [SourceFiles.GAS_SPARZIEL_ZIEL_V2]: 'gas-sparziel-ziel-v2',
+    [SourceFiles.GAS_SPARZIEL_AKTUELLE_EINSPARUNG]:
+        'gas-sparziel-aktuelle-einsparung',
+    [SourceFiles.GAS_SPARZIEL_AKTUELLE_EINSPARUNG_V2]:
+        'gas-sparziel-aktuelle-einsparung-v2',
+    [SourceFiles.GAS_SPARZIEL_AKTUELLE_EINSPARUNG_V3]: 'gas-sparziel-aktuelle-einsparung-v3',
+    [SourceFiles.SPARTIPPS]: 'spartipps',
+    [SourceFiles.SPARTIPPS_V2]: 'spartipps-v2',
+    [SourceFiles.PREISE_TREIBSTOFF_BLEIFREI]: 'preise-treibstoff-bleifrei',
+    [SourceFiles.PREISE_TREIBSTOFF_DIESEL]: 'preise-treibstoff-diesel',
+    [SourceFiles.PREISE_GAS_BOERSE]: 'preise-gas-boerse',
+    [SourceFiles.PREISE_GAS_ENDVERBRAUCH]: 'preise-gas-endverbrauch',
+    [SourceFiles.PREISE_HEIZOEL_ENTWICKLUNG]: 'preise-heizoel-entwicklung',
+    [SourceFiles.PREISE_STROM_BOERSE]: 'preise-strom-boerse',
+    [SourceFiles.PREISE_STROM_ENDVERBRAUCH]: 'preise-strom-endverbrauch',
+    [SourceFiles.PREISE_BRENNHOLZ_ENDVERBRAUCH]:
+        'preise-brennholz-endverbrauch',
+    [SourceFiles.PREISE_FERNWAERME_ENDVERBRAUCH]:
+        'preise-fernwaerme-endverbrauch',
+    [SourceFiles.WETTER_TEMPERATUR_AKTUELL]: 'wetter-temperatur-aktuell',
+    [SourceFiles.WETTER_TEMPERATUR_PROGNOSE]: 'wetter-temperatur-prognose',
+    [SourceFiles.WETTER_TEMPERATUR_TREND]: 'wetter-temperatur-trend'
+};

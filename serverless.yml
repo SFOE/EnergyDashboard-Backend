@@ -1,0 +1,1491 @@
+service: energy-dashboard-backend
+
+plugins:
+    - '@shelf/serverless-simplify-default-exec-role-plugin'
+
+provider:
+    name: aws
+    runtime: nodejs16.x
+    memorySize: 128
+    timeout: 10
+    stage: dev
+    region: eu-central-1
+    tracing:
+        lambda: true # optional, enables tracing for all functions (can be true (true equals 'Active') 'Active' or 'PassThrough')
+    environment:
+        S3_BUCKET: bfe-energy-dashboard-raw-data-${sls:stage}
+        ENV: ${sls:stage}
+
+package:
+    exclude:
+        - node_modules/**
+
+layers:
+    common-layer:
+        path: dist/common-layer
+        name: ${sls:stage}-common-layer
+        description: Contains common source used in multiple functions
+        package:
+            include:
+                - dist/common-layer
+        compatibleRuntimes:
+            - nodejs16.x
+    node-modules-layer:
+        path: dist/node-modules-layer
+        name: ${sls:stage}-node-modules-layer
+        description: Contains all node modules used in functions
+        package:
+            include:
+                - dist/node-modules-layer
+        compatibleRuntimes:
+            - nodejs16.x
+
+functions:
+    data-processing-routing-function:
+        handler: dist/functions/data-processing/routing-function/routing-function.handler
+        name: ${sls:stage}-data-processing-routing-function
+        description: Properly routes Aws Events to the relevant lambda functions
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        events:
+            - s3:
+                  bucket: ${self:provider.environment.S3_BUCKET}
+                  event: s3:ObjectCreated:*
+                  existing: true
+        package:
+            patterns:
+                - ./dist/functions/data-processing/routing-function/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-fuellungsgrad-speicherseen:
+        handler: dist/functions/data-processing/strom-fuellungsgrad-speicherseen/fuellungsgrad-speicherseen.handler
+        name: ${sls:stage}-data-processing-fuellungsgrad-speicherseen
+        description: Processes data for Fuellungsgrad of Speicherseen
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-fuellungsgrad-speicherseen/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-fuellungsgrad-speicherseen-v2:
+        handler: dist/functions/data-processing/strom-fuellungsgrad-speicherseen/strom-fuellungsgrad-speicherseen-v2.handler
+        name: ${sls:stage}-data-processing-fuellungsgrad-speicherseen-v2
+        description: Processes data for Fuellungsgrad of Speicherseen, Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-fuellungsgrad-speicherseen/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-dynamic-translations:
+        handler: dist/functions/data-processing/dynamic-translations/dynamic-translations.handler
+        name: ${sls:stage}-data-processing-dynamic-translations
+        description: Processes dynamic translations
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/dynamic-translations/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-fuellstand-gasspeicher:
+        handler: dist/functions/data-processing/fuellstand-gasspeicher/fuellstand-gasspeicher.handler
+        name: ${sls:stage}-data-processing-fuellstand-gasspeicher
+        description: Processes data for Fuellstand Gasspeicher
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/fuellstand-gasspeicher/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-fuellstand-gasspeicher-v2:
+        handler: dist/functions/data-processing/fuellstand-gasspeicher/fuellstand-gasspeicher-v2.handler
+        name: ${sls:stage}-data-processing-fuellstand-gasspeicher-v2
+        description: Processes data for Fuellstand Gasspeicher, Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/fuellstand-gasspeicher/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-import-export-historical-values:
+        handler: dist/functions/data-processing/strom-import-export/strom-import-export-historical-values.handler
+        name: ${sls:stage}-data-processing-strom-import-export-historical-values
+        description: Processes data for historical values of Strom Import/Export
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-import-export/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-import-export-historical-values-v2:
+        handler: dist/functions/data-processing/strom-import-export/strom-import-export-historical-values-v2.handler
+        name: ${sls:stage}-data-processing-strom-import-export-historical-values-v2
+        description: Processes data for historical values of Strom Import/Export Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-import-export/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-import-export-netto:
+        handler: dist/functions/data-processing/strom-import-export/strom-import-export-netto.handler
+        name: ${sls:stage}-data-processing-strom-import-export-netto
+        description: Processes data for netto values of Strom Import/Export
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-import-export/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-ampel:
+        handler: dist/functions/data-processing/ampel/ampel.handler
+        name: ${sls:stage}-data-processing-ampel
+        description: Processes data for Ampel
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/ampel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-gas-import-karte:
+        handler: dist/functions/data-processing/gas-import/gas-import-karte.handler
+        name: ${sls:stage}-data-processing-gas-import-karte
+        description: Processes data for Gas Import Karte
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/gas-import/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-gas-import-historical-values:
+        handler: dist/functions/data-processing/gas-import/gas-import-historical-values.handler
+        name: ${sls:stage}-data-processing-gas-import-historical-values
+        description: Processes data for Gas Import historical values
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/gas-import/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-gas-import-historical-values-v2:
+        handler: dist/functions/data-processing/gas-import/gas-import-historical-values-v2.handler
+        name: ${sls:stage}-data-processing-gas-import-historical-values-v2
+        description: Processes data for Gas Import historical values Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/gas-import/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-produktionsmix:
+        handler: dist/functions/data-processing/strom-produktion/strom-produktionsmix.handler
+        name: ${sls:stage}-data-processing-strom-produktionsmix
+        description: Processes data for Strom produktionsmix
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-produktion/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-produktion-import-verbrauch:
+        handler: dist/functions/data-processing/strom-produktion/strom-produktion-import-verbrauch.handler
+        name: ${sls:stage}-data-processing-strom-produktion-import-verbrauch
+        description: Processes data for Strom Produktion, Import & Verbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-produktion/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-verbrauch-historical-values:
+        handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-historical-values.handler
+        name: ${sls:stage}-data-processing-strom-verbrauch-historical-values
+        description: Processes data for Strom Verbrauch historical values
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-verbrauch-landesverbrauch-mit-prognose-v2:
+        handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-landesverbrauch-mit-prognose-v2.handler
+        name: ${sls:stage}-data-processing-landesverbrauch-prognose-v2
+        description: Processes data for Strom Verbrauch Landesverbrauch mit Prognose Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-verbrauch-endverbrauch:
+        handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-endverbrauch.handler
+        name: ${sls:stage}-data-processing-strom-verbrauch-endverbrauch
+        description: Processes data for Strom Verbrauch Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-verbrauch-endverbrauch-v2:
+        handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-endverbrauch-v2.handler
+        name: ${sls:stage}-data-processing-strom-verbrauch-endverbrauch-v2
+        description: Processes data for Strom Verbrauch Endverbrauch Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-verbrauch-landesverbrauch:
+        handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-landesverbrauch.handler
+        name: ${sls:stage}-data-processing-strom-verbrauch-landesverbrauch
+        description: Processes data for Strom Verbrauch Landesverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-verbrauch-landesverbrauch-vergleich-v2:
+        handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-landesverbrauch-vergleich-v2.handler
+        name: ${sls:stage}-data-processing-strom-landesverbrauch-vergleich-v2
+        description: Processes data for Strom Verbrauch Landesverbrauch Vergleich Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-sparziel-ziel:
+        handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-ziel.handler
+        name: ${sls:stage}-data-processing-strom-sparziel-ziel
+        description: Processes data for Strom Sparziel Ziel
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-sparziel-aktuelle-einsparung:
+        handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-aktuelle-einsparung.handler
+        name: ${sls:stage}-data-processing-strom-sparziel-aktuelle-einsparung
+        description: Processes data for Strom Sparziel Aktuelle Einsparung
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-sparziel-aktuelle-einsparung-v2:
+        handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-aktuelle-einsparung-v2.handler
+        name: ${sls:stage}-data-processing-strom-sparziel-aktuelle-einsparung-v2
+        description: Processes data for Strom Sparziel Aktuelle Einsparung Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-gas-sparziel-ziel:
+        handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-ziel.handler
+        name: ${sls:stage}-data-processing-gas-sparziel-ziel
+        description: Processes data for Gas Sparziel Ziel
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-gas-sparziel-ziel-v2:
+        handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-ziel-v2.handler
+        name: ${sls:stage}-data-processing-gas-sparziel-ziel-v2
+        description: Processes data for Gas Sparziel Ziel Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-gas-sparziel-aktuelle-einsparung:
+        handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-aktuelle-einsparung.handler
+        name: ${sls:stage}-data-processing-gas-sparziel-aktuelle-einsparung
+        description: Processes data for Gas Sparziel Aktuelle Einsparung
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-gas-sparziel-aktuelle-einsparung-v2:
+        handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-aktuelle-einsparung-v2.handler
+        name: ${sls:stage}-data-processing-gas-sparziel-aktuelle-einsparung-v2
+        description: Processes data for Gas Sparziel Aktuelle Einsparung Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-gas-sparziel-aktuelle-einsparung-v3:
+        handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-aktuelle-einsparung-v3.handler
+        name: ${sls:stage}-data-processing-gas-sparziel-aktuelle-einsparung-v3
+        description: Processes data for Gas Sparziel Aktuelle Einsparung Version 3
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-strom-import-export-uebersicht:
+        handler: dist/functions/data-processing/strom-import-export/strom-import-export-uebersicht.handler
+        name: ${sls:stage}-data-processing-strom-import-export-uebersicht
+        description: Processes data for Uebersicht for Strom Import & Export
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/strom-import-export/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-spartipps:
+        handler: dist/functions/data-processing/spartipps/spartipps.handler
+        name: ${sls:stage}-data-processing-spartipps
+        description: Processes data for Spartipps
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/spartipps/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-spartipps-v2:
+        handler: dist/functions/data-processing/spartipps/spartipps-v2.handler
+        name: ${sls:stage}-data-processing-spartipps-v2
+        description: Processes data for Spartipps, version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/spartipps/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-treibstoff-bleifrei:
+        handler: dist/functions/data-processing/preise/preise-treibstoff-bleifrei.handler
+        name: ${sls:stage}-data-processing-preise-treibstoff-bleifrei
+        description: Processes data for Preise Treibstoff Bleifrei
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-treibstoff-diesel:
+        handler: dist/functions/data-processing/preise/preise-treibstoff-diesel.handler
+        name: ${sls:stage}-data-processing-preise-treibstoff-diesel
+        description: Processes data for Preise Treibstoff Diesel
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-gas-boerse:
+        handler: dist/functions/data-processing/preise/preise-gas-boerse.handler
+        name: ${sls:stage}-data-processing-preise-gas-boerse
+        description: Processes data for Preise Gas Boerse
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-gas-endverbrauch:
+        handler: dist/functions/data-processing/preise/preise-gas-endverbrauch.handler
+        name: ${sls:stage}-data-processing-preise-gas-endverbrauch
+        description: Processes data for Preise Gas Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-heizoel-entwicklung:
+        handler: dist/functions/data-processing/preise/preise-heizoel-entwicklung.handler
+        name: ${sls:stage}-data-processing-preise-heizoel-entwicklung
+        description: Processes data for Preise Heizoel Entwicklung
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-strom-boerse:
+        handler: dist/functions/data-processing/preise/preise-strom-boerse.handler
+        name: ${sls:stage}-data-processing-preise-strom-boerse
+        description: Processes data for Preise Strom Boerse
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-strom-endverbrauch:
+        handler: dist/functions/data-processing/preise/preise-strom-endverbrauch.handler
+        name: ${sls:stage}-data-processing-preise-strom-endverbrauch
+        description: Processes data for Preise Strom Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-brennholz-endverbrauch:
+        handler: dist/functions/data-processing/preise/preise-brennholz-endverbrauch.handler
+        name: ${sls:stage}-data-processing-preise-brennholz-endverbrauch
+        description: Processes data for Preise Brennholz Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-preise-fernwaerme-endverbrauch:
+        handler: dist/functions/data-processing/preise/preise-fernwaerme-endverbrauch.handler
+        name: ${sls:stage}-data-processing-preise-fernwaerme-endverbrauch
+        description: Processes data for Preise Fernwaerme Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-wetter-temperatur-aktuell:
+        handler: dist/functions/data-processing/wetter/wetter-temperatur-aktuell.handler
+        name: ${sls:stage}-data-processing-wetter-temperatur-aktuell
+        description: Processes data for Wetter Temperatur Aktuell
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/wetter/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-wetter-temperatur-prognose:
+        handler: dist/functions/data-processing/wetter/wetter-temperatur-prognose.handler
+        name: ${sls:stage}-data-processing-wetter-temperatur-prognose
+        description: Processes data for Wetter Temperatur Prognose
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/wetter/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    data-processing-wetter-temperatur-trend:
+        handler: dist/functions/data-processing/wetter/wetter-temperatur-trend.handler
+        name: ${sls:stage}-data-processing-wetter-temperatur-trend
+        description: Processes data for Wetter Temperatur Trend
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 30
+        package:
+            patterns:
+                - ./dist/functions/data-processing/wetter/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-fuellungsgrad-speicherseen:
+        handler: dist/functions/api/get-strom-fuellungsgrad-speicherseen/get-fuellungsgrad-speicherseen.handler
+        name: ${sls:stage}-api-get-fuellungsgrad-speicherseen
+        description: Provides API to access data for fuellungsgrad of Speicherseen
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/fuellungsgrad-speicherseen
+        package:
+            patterns:
+                - ./dist/functions/api/get-strom-fuellungsgrad-speicherseen/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-fuellungsgrad-speicherseen-v2:
+        handler: dist/functions/api/get-strom-fuellungsgrad-speicherseen/get-strom-fuellungsgrad-speicherseen-v2.handler
+        name: ${sls:stage}-api-get-strom-fuellungsgrad-speicherseen-v2
+        description: Provides API to access data for fuellungsgrad of Speicherseen, version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/fuellungsgrad-speicherseen
+        package:
+            patterns:
+                - ./dist/functions/api/get-strom-fuellungsgrad-speicherseen/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-dynamic-translations:
+        handler: dist/functions/api/get-dynamic-translations/get-dynamic-translations.handler
+        name: ${sls:stage}-api-get-dynamic-translations
+        description: Provides API to access dynamic translations
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/dynamic-translations
+        package:
+            patterns:
+                - ./dist/functions/api/get-dynamic-translations/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-fuellstand-gasspeicher:
+        handler: dist/functions/api/get-fuellstand-gasspeicher/get-fuellstand-gasspeicher.handler
+        name: ${sls:stage}-api-get-fuellstand-gasspeicher
+        description: Provides API to access data for Fuellstand of Gasspeicher
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/fuellstand-gasspeicher
+        package:
+            patterns:
+                - ./dist/functions/api/get-fuellstand-gasspeicher/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-fuellstand-gasspeicher-v2:
+        handler: dist/functions/api/get-fuellstand-gasspeicher/get-fuellstand-gasspeicher-v2.handler
+        name: ${sls:stage}-api-get-fuellstand-gasspeicher-v2
+        description: Provides API to access data for Fuellstand of Gasspeicher, Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/fuellstand-gasspeicher
+        package:
+            patterns:
+                - ./dist/functions/api/get-fuellstand-gasspeicher/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-import-export-historical-values:
+        handler: dist/functions/api/strom-import-export/get-strom-import-export-historical-values.handler
+        name: ${sls:stage}-api-get-strom-import-export-historical-values
+        description: Provides API to access data for historical values of Strom Import/Export
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-import-export/historical-values
+        package:
+            patterns:
+                - ./dist/functions/api/strom-import-export/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-import-export-historical-values-v2:
+        handler: dist/functions/api/strom-import-export/get-strom-import-export-historical-values-v2.handler
+        name: ${sls:stage}-api-get-strom-import-export-historical-values-v2
+        description: Provides API to access data for historical values of Strom Import/Export Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/strom-import-export/historical-values
+        package:
+            patterns:
+                - ./dist/functions/api/strom-import-export/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-import-export-netto:
+        handler: dist/functions/api/strom-import-export/get-strom-import-export-netto.handler
+        name: ${sls:stage}-api-get-strom-import-export-netto
+        description: Provides API to access data for netto values of Strom Import/Export
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-import-export/netto
+        package:
+            patterns:
+                - ./dist/functions/api/strom-import-export/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-ampel:
+        handler: dist/functions/api/get-ampel/get-ampel.handler
+        name: ${sls:stage}-api-get-ampel
+        description: Provides API to access data for Ampel
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/ampel
+        package:
+            patterns:
+                - ./dist/functions/api/get-ampel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-gas-import-karte:
+        handler: dist/functions/api/gas-import/get-gas-import-karte.handler
+        name: ${sls:stage}-api-get-gas-import-karte
+        description: Provides API to access data for Gas Import Karte
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/gas-import/karte
+        package:
+            patterns:
+                - ./dist/functions/api/gas-import/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-gas-import-historical-values:
+        handler: dist/functions/api/gas-import/get-gas-import-historical-values.handler
+        name: ${sls:stage}-api-get-gas-import-historical-values
+        description: Provides API to access data for Gas Import Historical Values
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/gas-import/historical-values
+        package:
+            patterns:
+                - ./dist/functions/api/gas-import/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-gas-import-historical-values-v2:
+        handler: dist/functions/api/gas-import/get-gas-import-historical-values-v2.handler
+        name: ${sls:stage}-api-get-gas-import-historical-values-v2
+        description: Provides API to access data for Gas Import Historical Values Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/gas-import/historical-values
+        package:
+            patterns:
+                - ./dist/functions/api/gas-import/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-produktionsmix:
+        handler: dist/functions/api/strom-produktion/get-strom-produktionsmix.handler
+        name: ${sls:stage}-api-get-strom-produktionsmix
+        description: Provides API to access data for Strom Produktionsmix
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-produktionsmix
+        package:
+            patterns:
+                - ./dist/functions/api/strom-produktion/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-produktion-import-verbrauch:
+        handler: dist/functions/api/strom-produktion/get-strom-produktion-import-verbrauch.handler
+        name: ${sls:stage}-api-get-strom-produktion-import-verbrauch
+        description: Provides API to access data for Strom Produktion, Import & Verbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-produktion-import-verbrauch
+        package:
+            patterns:
+                - ./dist/functions/api/strom-produktion/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-verbrauch-historical-values:
+        handler: dist/functions/api/strom-verbrauch/get-strom-verbrauch-historical-values.handler
+        name: ${sls:stage}-api-get-strom-verbrauch-historical-values
+        description: Provides API to access data for Strom Verbrauch Historical Values
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-verbrauch/historical-values
+        package:
+            patterns:
+                - ./dist/functions/api/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-verbrauch-landesverbrauch-mit-prognose-v2:
+        handler: dist/functions/api/strom-verbrauch/get-strom-verbrauch-landesverbrauch-mit-prognose-v2.handler
+        name: ${sls:stage}-api-get-strom-verbrauch-landesverbrauch-mit-prognose-v2
+        description: Provides API to access data for Strom Verbrauch Landesverbrauch mit Prognose
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/strom-verbrauch/landesverbrauch-mit-prognose
+        package:
+            patterns:
+                - ./dist/functions/api/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-verbrauch-endverbrauch:
+        handler: dist/functions/api/strom-verbrauch/get-strom-verbrauch-endverbrauch.handler
+        name: ${sls:stage}-api-get-strom-verbrauch-endverbrauch
+        description: Provides API to access data for Strom Verbrauch Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-verbrauch/endverbrauch
+        package:
+            patterns:
+                - ./dist/functions/api/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-verbrauch-endverbrauch-v2:
+        handler: dist/functions/api/strom-verbrauch/get-strom-verbrauch-endverbrauch-v2.handler
+        name: ${sls:stage}-api-get-strom-verbrauch-endverbrauch-v2
+        description: Provides API to access data for Strom Verbrauch Endverbrauch Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/strom-verbrauch/endverbrauch
+        package:
+            patterns:
+                - ./dist/functions/api/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-verbrauch-landesverbrauch:
+        handler: dist/functions/api/strom-verbrauch/get-strom-verbrauch-landesverbrauch.handler
+        name: ${sls:stage}-api-get-strom-verbrauch-landesverbrauch
+        description: Provides API to access data for Strom Verbrauch Landesverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-verbrauch/landesverbrauch
+        package:
+            patterns:
+                - ./dist/functions/api/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-verbrauch-landesverbrauch-vergleich-v2:
+        handler: dist/functions/api/strom-verbrauch/get-strom-verbrauch-landesverbrauch-vergleich-v2.handler
+        name: ${sls:stage}-api-get-strom-verbrauch-landesverbrauch-vergleich-v2
+        description: Provides API to access data for Strom Verbrauch Landesverbrauch Vergleich Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/strom-verbrauch/landesverbrauch-vergleich
+        package:
+            patterns:
+                - ./dist/functions/api/strom-verbrauch/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-sparziel-ziel:
+        handler: dist/functions/api/strom-sparziel/get-strom-sparziel-ziel.handler
+        name: ${sls:stage}-api-get-strom-sparziel-ziel
+        description: Provides API to access data for Strom Sparziel Ziel
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-sparziel/ziel
+        package:
+            patterns:
+                - ./dist/functions/api/strom-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-sparziel--aktuelle-einsparung:
+        handler: dist/functions/api/strom-sparziel/get-strom-sparziel-aktuelle-einsparung.handler
+        name: ${sls:stage}-api-get-strom-sparziel-aktuelle-einsparung
+        description: Provides API to access data for Strom Sparziel Aktuelle Einsparung
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/strom-sparziel/aktuelle-einsparung
+        package:
+            patterns:
+                - ./dist/functions/api/strom-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-strom-sparziel-aktuelle-einsparung-v2:
+        handler: dist/functions/api/strom-sparziel/get-strom-sparziel-aktuelle-einsparung-v2.handler
+        name: ${sls:stage}-api-get-strom-sparziel-aktuelle-einsparung-v2
+        description: Provides API to access data for Strom Sparziel Aktuelle Einsparung Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/strom-sparziel/aktuelle-einsparung
+        package:
+            patterns:
+                - ./dist/functions/api/strom-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-gas-sparziel-ziel:
+        handler: dist/functions/api/gas-sparziel/get-gas-sparziel-ziel.handler
+        name: ${sls:stage}-api-get-gas-sparziel-ziel
+        description: Provides API to access data for Gas Sparziel Ziel
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/gas-sparziel/ziel
+        package:
+            patterns:
+                - ./dist/functions/api/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-gas-sparziel-ziel-v2:
+        handler: dist/functions/api/gas-sparziel/get-gas-sparziel-ziel-v2.handler
+        name: ${sls:stage}-api-get-gas-sparziel-ziel-v2
+        description: Provides API to access data for Gas Sparziel Ziel Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/gas-sparziel/ziel
+        package:
+            patterns:
+                - ./dist/functions/api/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-gas-sparziel-aktuelle-einsparung:
+        handler: dist/functions/api/gas-sparziel/get-gas-sparziel-aktuelle-einsparung.handler
+        name: ${sls:stage}-api-get-gas-sparziel-aktuelle-einsparung
+        description: Provides API to access data for Gas Sparziel Aktuelle Einsparung
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/gas-sparziel/aktuelle-einsparung
+        package:
+            patterns:
+                - ./dist/functions/api/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-gas-sparziel-aktuelle-einsparung-v2:
+        handler: dist/functions/api/gas-sparziel/get-gas-sparziel-aktuelle-einsparung-v2.handler
+        name: ${sls:stage}-api-get-gas-sparziel-aktuelle-einsparung-v2
+        description: Provides API to access data for Gas Sparziel Aktuelle Einsparung Version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v2/gas-sparziel/aktuelle-einsparung
+        package:
+            patterns:
+                - ./dist/functions/api/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-gas-sparziel-aktuelle-einsparung-v3:
+        handler: dist/functions/api/gas-sparziel/get-gas-sparziel-aktuelle-einsparung-v3.handler
+        name: ${sls:stage}-api-get-gas-sparziel-aktuelle-einsparung-v3
+        description: Provides API to access data for Gas Sparziel Aktuelle Einsparung Version 3
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/v3/gas-sparziel/aktuelle-einsparung
+        package:
+            patterns:
+                - ./dist/functions/api/gas-sparziel/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-dashboard-strom:
+        handler: dist/functions/api/dashboard/get-dashboard-strom.handler
+        name: ${sls:stage}-api-get-dashboard-strom
+        description: Provides API to access data for Strom Data for dashboard
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/dashboard/strom
+        package:
+            patterns:
+                - ./dist/functions/api/dashboard/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-dashboard-gas:
+        handler: dist/functions/api/dashboard/get-dashboard-gas.handler
+        name: ${sls:stage}-api-get-dashboard-gas
+        description: Provides API to access data for Gas Data for dashboard
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/dashboard/gas
+        package:
+            patterns:
+                - ./dist/functions/api/dashboard/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-dashboard-spartipps:
+        handler: dist/functions/api/dashboard/get-dashboard-spartipps.handler
+        name: ${sls:stage}-api-get-dashboard-spartipps
+        description: Provides API to access data for Spartipps for dashboard
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/dashboard/spartipps
+        package:
+            patterns:
+                - ./dist/functions/api/dashboard/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-dashboard-spartipps-v2:
+        handler: dist/functions/api/dashboard/get-dashboard-spartipps-v2.handler
+        name: ${sls:stage}-api-get-dashboard-spartipps-v2
+        description: Provides API to access data for Spartipps for dashboard, version 2
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/dashboard/v2/spartipps
+        package:
+            patterns:
+                - ./dist/functions/api/dashboard/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-dashboard-preise:
+        handler: dist/functions/api/dashboard/get-dashboard-preise.handler
+        name: ${sls:stage}-api-get-dashboard-preise
+        description: Provides API to access data for preise for dashboard
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/dashboard/preise
+        package:
+            patterns:
+                - ./dist/functions/api/dashboard/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-dashboard-wetter:
+        handler: dist/functions/api/dashboard/get-dashboard-wetter.handler
+        name: ${sls:stage}-api-get-dashboard-wetter
+        description: Provides API to access data for wetter for dashboard
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/dashboard/wetter
+        package:
+            patterns:
+                - ./dist/functions/api/dashboard/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-treibstoff-bleifrei:
+        handler: dist/functions/api/preise/get-preise-treibstoff-bleifrei.handler
+        name: ${sls:stage}-api-get-preise-treibstoff-bleifrei
+        description: Provides API to access data for Preise Treibstoff Bleifrei
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/treibstoff-bleifrei
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-treibstoff-diesel:
+        handler: dist/functions/api/preise/get-preise-treibstoff-diesel.handler
+        name: ${sls:stage}-api-get-preise-treibstoff-diesel
+        description: Provides API to access data for Preise Treibstoff Diesel
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/treibstoff-diesel
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-gas-boerse:
+        handler: dist/functions/api/preise/get-preise-gas-boerse.handler
+        name: ${sls:stage}-api-get-preise-gas-boerse
+        description: Provides API to access data for Preise Gas Boerse
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/gas-boerse
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-gas-endverbrauch:
+        handler: dist/functions/api/preise/get-preise-gas-endverbrauch.handler
+        name: ${sls:stage}-api-get-preise-gas-endverbrauch
+        description: Provides API to access data for Preise Gas Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/gas-endverbrauch
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-heizoel-entwicklung:
+        handler: dist/functions/api/preise/get-preise-heizoel-entwicklung.handler
+        name: ${sls:stage}-api-get-preise-heizoel-entwicklung
+        description: Provides API to access data for Preise Heizoel Entwicklung
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/heizoel-entwicklung
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-strom-boerse:
+        handler: dist/functions/api/preise/get-preise-strom-boerse.handler
+        name: ${sls:stage}-api-get-preise-strom-boerse
+        description: Provides API to access data for Preise Strom Boerse
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/strom-boerse
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-strom-endverbrauch:
+        handler: dist/functions/api/preise/get-preise-strom-endverbrauch.handler
+        name: ${sls:stage}-api-get-preise-strom-endverbrauch
+        description: Provides API to access data for Preise Strom Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/strom-endverbrauch
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-brennholz-endverbrauch:
+        handler: dist/functions/api/preise/get-preise-brennholz-endverbrauch.handler
+        name: ${sls:stage}-api-get-preise-brennholz-endverbrauch
+        description: Provides API to access data for Preise Brennholz Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/brennholz-endverbrauch
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-preise-fernwaerme-endverbrauch:
+        handler: dist/functions/api/preise/get-preise-fernwaerme-endverbrauch.handler
+        name: ${sls:stage}-api-get-preise-fernwaerme-endverbrauch
+        description: Provides API to access data for Preise Fernwaerme Endverbrauch
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/preise/fernwaerme-endverbrauch
+        package:
+            patterns:
+                - ./dist/functions/api/preise/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-wetter-temperatur-aktuell:
+        handler: dist/functions/api/wetter/get-wetter-temperatur-aktuell.handler
+        name: ${sls:stage}-api-get-wetter-temperatur-aktuell
+        description: Provides API to access data for Wetter Temperatur Aktuell
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/wetter/temperatur-aktuell
+        package:
+            patterns:
+                - ./dist/functions/api/wetter/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-wetter-temperatur-prognose:
+        handler: dist/functions/api/wetter/get-wetter-temperatur-prognose.handler
+        name: ${sls:stage}-api-get-wetter-temperatur-prognose
+        description: Provides API to access data for Wetter Temperatur Prognose
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/wetter/temperatur-prognose
+        package:
+            patterns:
+                - ./dist/functions/api/wetter/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+    api-wetter-temperatur-trend:
+        handler: dist/functions/api/wetter/get-wetter-temperatur-trend.handler
+        name: ${sls:stage}-api-get-wetter-temperatur-trend
+        description: Provides API to access data for Wetter Temperatur Trend
+        runtime: nodejs16.x
+        memorySize: 128
+        timeout: 10
+        events:
+            - httpApi:
+                  method: GET
+                  path: /api/wetter/temperatur-trend
+        package:
+            patterns:
+                - ./dist/functions/api/wetter/*
+        layers:
+            - !Ref CommonDashlayerLambdaLayer
+            - !Ref NodeDashmodulesDashlayerLambdaLayer
