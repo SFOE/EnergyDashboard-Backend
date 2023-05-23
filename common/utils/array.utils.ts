@@ -13,3 +13,9 @@ export const groupBy = function(arr, key) {
         return rv;
     }, {});
 };
+
+export const unique = <T>(arr: T[], attributeToBeUnique: string): T[] => {
+    return [
+        ...new Map(arr.map((item) => [item[attributeToBeUnique], item])).values(),
+    ];
+}

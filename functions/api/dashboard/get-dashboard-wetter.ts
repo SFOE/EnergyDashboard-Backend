@@ -1,12 +1,12 @@
 import { createResponse } from '/opt/nodejs/api/api-requests';
 import {
     DashboardEntryWithoutTrendApi,
-    DashboardTrendEntryApi,
+    DashboardTrendEntryApi
 } from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
 import { DashboardWetterApi } from '/opt/nodejs/api/dashboard/dashboard-wetter.api-model';
-import { fetchMostRecentWetterTemperaturAktuellSchweiz } from '/opt/nodejs/db/wetter-temperatur-aktuell.db';
-import { fetchMostRecentWetterTemperaturPrognoseSchweiz } from '/opt/nodejs/db/wetter-temperatur-prognose.db';
-import { fetchWetterTemperaturTrend } from '/opt/nodejs/db/wetter-temperatur-trend.db';
+import { fetchMostRecentWetterTemperaturAktuellSchweiz } from '/opt/nodejs/db/wetter/wetter-temperatur-aktuell.db';
+import { fetchMostRecentWetterTemperaturPrognoseSchweiz } from '/opt/nodejs/db/wetter/wetter-temperatur-prognose.db';
+import { fetchWetterTemperaturTrend } from '/opt/nodejs/db/wetter/wetter-temperatur-trend.db';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -25,39 +25,49 @@ const getDataForWetterDashboard = async (): Promise<DashboardWetterApi> => {
     return {
         aktuelleTemperatur,
         prognoseTemperatur,
-        trend,
+        trend
     };
-}
+};
 
-const getAktuelleTemperatur = async (): Promise<DashboardEntryWithoutTrendApi> => {
-    console.log(`getAktuelleTemperatur`);
+const getAktuelleTemperatur =
+    async (): Promise<DashboardEntryWithoutTrendApi> => {
+        console.log(`getAktuelleTemperatur`);
 
-    const currentValue = await fetchMostRecentWetterTemperaturAktuellSchweiz();
-    console.log(`getAktuelleTemperatur, currentValue: ${JSON.stringify(currentValue)}`);
-    if (!currentValue) {
-        return null;
-    }
+        const currentValue =
+            await fetchMostRecentWetterTemperaturAktuellSchweiz();
+        console.log(
+            `getAktuelleTemperatur, currentValue: ${JSON.stringify(
+                currentValue
+            )}`
+        );
+        if (!currentValue) {
+            return null;
+        }
 
-    return {
-        value: currentValue.lufttemperaturTagesmittel,
-        date: currentValue.datum,
-    }
-}
+        return {
+            value: currentValue.lufttemperaturTagesmittel,
+            date: currentValue.date
+        };
+    };
 
-const getPrognoseTemperatur = async (): Promise<DashboardEntryWithoutTrendApi> => {
-    console.log(`getAktuellePrognose`);
+const getPrognoseTemperatur =
+    async (): Promise<DashboardEntryWithoutTrendApi> => {
+        console.log(`getAktuellePrognose`);
 
-    const currentValue = await fetchMostRecentWetterTemperaturPrognoseSchweiz();
-    console.log(`getAktuellePrognose, currentValue: ${JSON.stringify(currentValue)}`);
-    if (!currentValue) {
-        return null;
-    }
+        const currentValue =
+            await fetchMostRecentWetterTemperaturPrognoseSchweiz();
+        console.log(
+            `getAktuellePrognose, currentValue: ${JSON.stringify(currentValue)}`
+        );
+        if (!currentValue) {
+            return null;
+        }
 
-    return {
-        value: currentValue.lufttemperaturPrognose,
-        date: currentValue.datum,
-    }
-}
+        return {
+            value: currentValue.lufttemperaturPrognose,
+            date: currentValue.date
+        };
+    };
 
 const getTrend = async (): Promise<DashboardTrendEntryApi> => {
     console.log(`getTrend`);
@@ -71,6 +81,6 @@ const getTrend = async (): Promise<DashboardTrendEntryApi> => {
 
     return {
         trend: trend.trend,
-        trendRating: trend.trendRating,
-    }
-}
+        trendRating: trend.trendRating
+    };
+};

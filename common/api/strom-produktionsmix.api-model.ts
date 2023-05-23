@@ -1,9 +1,9 @@
+import { DateModel } from '../models/base/date.model';
+import { dateSortFn } from '../utils/sort.utils';
 import { StromProduktionsMix } from '/opt/nodejs/models/strom-produktionsmix.model';
 
-export interface StromProduktionsMixApi {
-    date: Date,
-
-    [year: number]: StromProduktionsMixEntryApi
+export interface StromProduktionsMixApi extends DateModel {
+    [year: number]: StromProduktionsMixEntryApi;
 }
 
 export interface StromProduktionsMixEntryApi {
@@ -22,27 +22,27 @@ export interface StromProduktionsMixEntryApi {
     anteilPhotovoltaik: number;
 }
 
-export const mapToApiModel = (entries: StromProduktionsMix[]): StromProduktionsMixApi => {
+export const mapToApiModel = (
+    entries: StromProduktionsMix[]
+): StromProduktionsMixApi => {
     const date = getCurrentDate(entries);
     const stromProduktionsMix: StromProduktionsMixApi = {
-        date: date,
-    }
+        date: date
+    };
 
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
         const mappedEntry = mapEntry(entry);
-        const year = new Date(entry.datum).getFullYear();
+        const year = new Date(entry.date).getFullYear();
         stromProduktionsMix[year] = mappedEntry;
-    })
+    });
     return stromProduktionsMix;
-}
+};
 
-const getCurrentDate = (entries: StromProduktionsMix[]): Date => {
-    const sortedEntries = entries.sort(sortFn);
+const getCurrentDate = (entries: StromProduktionsMix[]): string => {
+    const sortedEntries = entries.sort(dateSortFn);
     const currentEntry = sortedEntries[sortedEntries.length - 1];
-    return new Date(currentEntry.datum);
-}
-
-const sortFn = (a: StromProduktionsMix, b: StromProduktionsMix) => new Date(a.datum).getTime() - new Date(b.datum).getTime();
+    return currentEntry.date;
+};
 
 const mapEntry = (entry: StromProduktionsMix): StromProduktionsMixEntryApi => ({
     kumuliertEigenproduktion: entry.kumuliertEigenproduktion,
@@ -57,5 +57,5 @@ const mapEntry = (entry: StromProduktionsMix): StromProduktionsMixEntryApi => ({
     anteilFlusskraft: entry.anteilFlusskraft,
     anteilSpeicherkraft: entry.anteilSpeicherkraft,
     anteilWind: entry.anteilWind,
-    anteilPhotovoltaik: entry.anteilPhotovoltaik,
+    anteilPhotovoltaik: entry.anteilPhotovoltaik
 });

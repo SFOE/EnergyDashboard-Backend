@@ -1,63 +1,73 @@
-import { FuellungsgradSpeicherseen, Region } from '/opt/nodejs/models/fuellungsgrad-speicherseen.model';
+import { FiveYearWithDiffStatisticsModel } from '../models/base/statistics.model';
+import {
+    FuellungsgradSpeicherseen,
+    Region
+} from '/opt/nodejs/models/fuellungsgrad-speicherseen.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 import { convertWeekNumberToDate } from '/opt/nodejs/utils/date.utils';
 
 export type FuellungsgradSpeicherseenRegionApi = {
-    [key in Region]: FuellungsgradSpeicherseenPerRegionApi
+    [key in Region]: FuellungsgradSpeicherseenPerRegionApi;
 };
 
 type FuellungsgradSpeicherseenPerRegionApi = {
     currentEntry: {
-        speicherstandProzent: number,
-        trend: Trend,
-        trendRating: TrendRating,
-        date: string
-    }
-    entries: FuellungsgradSpeicherseenApi[]
-}
+        speicherstandProzent: number;
+        trend: Trend;
+        trendRating: TrendRating;
+        date: string;
+    };
+    entries: FuellungsgradSpeicherseenApi[];
+};
 
-export interface FuellungsgradSpeicherseenApi {
+export interface FuellungsgradSpeicherseenApi
+    extends FiveYearWithDiffStatisticsModel {
     kalenderwoche: number;
     speicherstandProzent: number;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
     historicalMin: number | null;
     historicalMinWithReserves: number | null;
-    differenzMittelwert: number;
-    differenzMin: number;
-    differenzMax: number;
 }
 
-export const mapToApiModel = (records: FuellungsgradSpeicherseen[]): FuellungsgradSpeicherseenRegionApi => {
+export const mapToApiModel = (
+    records: FuellungsgradSpeicherseen[]
+): FuellungsgradSpeicherseenRegionApi => {
     return {
         [Region.TotalCH]: mapRegion(Region.TotalCH, records),
         [Region.UebrigCH]: mapRegion(Region.UebrigCH, records),
         [Region.Graubuenden]: mapRegion(Region.Graubuenden, records),
         [Region.Wallis]: mapRegion(Region.Wallis, records),
-        [Region.Tessin]: mapRegion(Region.Tessin, records),
+        [Region.Tessin]: mapRegion(Region.Tessin, records)
     };
-}
+};
 
-const mapRegion = (region: Region, allEntries: FuellungsgradSpeicherseen[]): FuellungsgradSpeicherseenPerRegionApi => {
+const mapRegion = (
+    region: Region,
+    allEntries: FuellungsgradSpeicherseen[]
+): FuellungsgradSpeicherseenPerRegionApi => {
     const regionEntries = filterEntries(region, allEntries).sort(regionSortFn);
-    const currentEntry = regionEntries.slice().reverse().find(entry => entry.speicherstandProzent !== null);
-    const entries = regionEntries.map(entry => mapToApi(entry));
+    const currentEntry = regionEntries
+        .slice()
+        .reverse()
+        .find((entry) => entry.speicherstandProzent !== null);
+    const entries = regionEntries.map((entry) => mapToApi(entry));
 
     return {
         currentEntry: {
             speicherstandProzent: currentEntry.speicherstandProzent,
             trend: currentEntry.trend,
             trendRating: currentEntry.trendRating,
-            date: convertWeekNumberToDate(currentEntry.kalenderwoche),
+            date: convertWeekNumberToDate(currentEntry.kalenderwoche)
         },
-        entries: entries,
-    }
-}
+        entries: entries
+    };
+};
 
-const filterEntries = (region: Region, allEntries: FuellungsgradSpeicherseen[]): FuellungsgradSpeicherseen[] => {
-    return allEntries.filter(entry => entry.region === region);
-}
+const filterEntries = (
+    region: Region,
+    allEntries: FuellungsgradSpeicherseen[]
+): FuellungsgradSpeicherseen[] => {
+    return allEntries.filter((entry) => entry.region === region);
+};
 
 const regionSortFn = (a, b) => a.kalenderwoche - b.kalenderwoche;
 
@@ -71,7 +81,7 @@ const mapToApi = ({
     historicalMinWithReserves,
     differenzMittelwert,
     differenzMin,
-    differenzMax,
+    differenzMax
 }: FuellungsgradSpeicherseen): FuellungsgradSpeicherseenApi => ({
     kalenderwoche,
     speicherstandProzent,
@@ -82,5 +92,5 @@ const mapToApi = ({
     historicalMinWithReserves,
     differenzMittelwert,
     differenzMin,
-    differenzMax,
-})
+    differenzMax
+});

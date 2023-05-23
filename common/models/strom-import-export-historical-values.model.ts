@@ -1,3 +1,4 @@
+import { FiveYearWithDiffStatisticsModel } from './base/statistics.model';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
 
 export interface StromImportExportHistoricalValueSource {
@@ -11,22 +12,21 @@ export interface StromImportExportHistoricalValueSource {
     Diff_Max: string;
 }
 
-export interface StromImportExportHistoricalValue {
+export interface StromImportExportHistoricalValue
+    extends FiveYearWithDiffStatisticsModel {
     kalenderwoche: number;
     nettoimport: number | null;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
-    differenzMittelwert: number  | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
 }
 
-export const map = (records: StromImportExportHistoricalValueSource[]): StromImportExportHistoricalValue[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: StromImportExportHistoricalValueSource[]
+): StromImportExportHistoricalValue[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-const mapRecord = (record: StromImportExportHistoricalValueSource): StromImportExportHistoricalValue => ({
+const mapRecord = (
+    record: StromImportExportHistoricalValueSource
+): StromImportExportHistoricalValue => ({
     kalenderwoche: parseInt(record.KW),
     nettoimport: parseFloatOrNullForNA(record.CH_Nettoimport_GWh),
     fiveYearMin: parseFloat(record.Min_5j),
@@ -34,5 +34,5 @@ const mapRecord = (record: StromImportExportHistoricalValueSource): StromImportE
     fiveYearMittelwert: parseFloat(record.Mittelwert_5j),
     differenzMittelwert: parseFloatOrNullForNA(record.Diff_Mittelwert),
     differenzMin: parseFloatOrNullForNA(record.Diff_Min),
-    differenzMax: parseFloatOrNullForNA(record.Diff_Max),
-})
+    differenzMax: parseFloatOrNullForNA(record.Diff_Max)
+});

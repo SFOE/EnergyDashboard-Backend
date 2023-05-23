@@ -9,23 +9,29 @@ export interface SparzielAktuelleEinsparungSourceV2V3 {
 }
 
 export interface SparzielAktuelleEinsparungV2V3 extends BaseModel, DateModel {
-    id: string;
-    date: string;
     differenzMittelwertProzent: number;
     temperaturAbweichungNorm: number;
 }
 
-export const map = (records: SparzielAktuelleEinsparungSourceV2V3[]): SparzielAktuelleEinsparungV2V3[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: SparzielAktuelleEinsparungSourceV2V3[]
+): SparzielAktuelleEinsparungV2V3[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-export const mapRecord = (record: SparzielAktuelleEinsparungSourceV2V3): SparzielAktuelleEinsparungV2V3 => ({
+export const mapRecord = (
+    record: SparzielAktuelleEinsparungSourceV2V3
+): SparzielAktuelleEinsparungV2V3 => ({
     id: createId(record.Datum),
     date: record.Datum,
-    differenzMittelwertProzent: parseFloatOrNullForNA(record.Differenz_Mittelwert_prozent),
-    temperaturAbweichungNorm: parseFloatOrNullForNA(record.TemperaturAbweichungNorm),
-})
+    differenzMittelwertProzent: parseFloatOrNullForNA(
+        record.Differenz_Mittelwert_prozent
+    ),
+    temperaturAbweichungNorm: parseFloatOrNullForNA(
+        record.TemperaturAbweichungNorm
+    )
+});
 
 export const createId = (date: string) => {
     return `sparziel-aktuelle-einsparung-v2-${date}`;
-}
+};

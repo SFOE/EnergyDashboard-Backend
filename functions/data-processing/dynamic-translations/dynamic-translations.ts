@@ -1,5 +1,5 @@
-import { saveAllDynamicTranslations } from '/opt/nodejs/db/dynamic-translations.db';
-import { DynamicTranslation, DynamicTranslationSource, map } from '/opt/nodejs/models/dynamic-translation.model';
+import { deleteAllDynamicTranslations, saveAllDynamicTranslations } from '/opt/nodejs/db/dynamic-translations.db';
+import { DynamicTranslationSource, map } from '/opt/nodejs/models/dynamic-translation.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getJSONFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { Context, S3Event } from 'aws-lambda';
@@ -16,6 +16,7 @@ const processDynamicTranslations = async () => {
     const translations = map(translationSource);
     console.log(`translations: ${JSON.stringify(translations)}`);
 
+    await deleteAllDynamicTranslations();
     await saveAllDynamicTranslations(translations);
 }
 

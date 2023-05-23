@@ -1,0 +1,896 @@
+service: energy-dashboard-backend-data
+
+plugins:
+  - '@shelf/serverless-simplify-default-exec-role-plugin'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  memorySize: 128
+  timeout: 30
+  stage: dev
+  region: eu-central-1
+  tags:
+    STAGE: ${sls:stage}
+  tracing:
+    lambda: true # optional, enables tracing for all functions (can be true (true equals 'Active') 'Active' or 'PassThrough')
+  environment:
+    S3_BUCKET: bfe-energy-dashboard-raw-data-${sls:stage}
+    S3_IMAGE_BUCKET: bfe-energie-dashboard-public-static-files-${sls:stage}
+    ENV: ${sls:stage}
+
+package:
+  exclude:
+    - node_modules/**
+
+layers:
+  common-layer:
+    path: dist/common-layer
+    name: ${sls:stage}-common-layer
+    description: Contains common source used in multiple functions
+    package:
+      include:
+        - dist/common-layer
+    compatibleRuntimes:
+      - nodejs16.x
+  node-modules-layer:
+    path: dist/node-modules-layer
+    name: ${sls:stage}-node-modules-layer
+    description: Contains all node modules used in functions
+    package:
+      include:
+        - dist/node-modules-layer
+    compatibleRuntimes:
+      - nodejs16.x
+
+functions:
+  data-processing-routing-function:
+    handler: dist/functions/data-processing/routing-function/routing-function.handler
+    name: ${sls:stage}-data-processing-routing-function
+    description: Properly routes Aws Events to the relevant lambda functions
+    events:
+      - s3:
+          bucket: ${self:provider.environment.S3_BUCKET}
+          event: s3:ObjectCreated:*
+          existing: true
+    package:
+      patterns:
+        - dist/functions/data-processing/routing-function/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-fuellungsgrad-speicherseen-v2:
+    handler: dist/functions/data-processing/strom-fuellungsgrad-speicherseen/strom-fuellungsgrad-speicherseen-v2.handler
+    name: ${sls:stage}-data-processing-fuellungsgrad-speicherseen-v2
+    description: Processes data for Fuellungsgrad of Speicherseen, Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-fuellungsgrad-speicherseen/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-dynamic-translations:
+    handler: dist/functions/data-processing/dynamic-translations/dynamic-translations.handler
+    name: ${sls:stage}-data-processing-dynamic-translations
+    description: Processes dynamic translations
+    package:
+      patterns:
+        - dist/functions/data-processing/dynamic-translations/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-fuellstand-gasspeicher-v2:
+    handler: dist/functions/data-processing/fuellstand-gasspeicher/fuellstand-gasspeicher-v2.handler
+    name: ${sls:stage}-data-processing-fuellstand-gasspeicher-v2
+    description: Processes data for Fuellstand Gasspeicher, Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/fuellstand-gasspeicher/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-import-export-historical-values-v2:
+    handler: dist/functions/data-processing/strom-import-export/strom-import-export-historical-values-v2.handler
+    name: ${sls:stage}-data-processing-strom-import-export-historical-values-v2
+    description: Processes data for historical values of Strom Import/Export Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-import-export/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-import-export-netto:
+    handler: dist/functions/data-processing/strom-import-export/strom-import-export-netto.handler
+    name: ${sls:stage}-data-processing-strom-import-export-netto
+    description: Processes data for netto values of Strom Import/Export
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-import-export/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-ampel:
+    handler: dist/functions/data-processing/ampel/ampel.handler
+    name: ${sls:stage}-data-processing-ampel
+    description: Processes data for Ampel
+    package:
+      patterns:
+        - dist/functions/data-processing/ampel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-import-karte:
+    handler: dist/functions/data-processing/gas-import/gas-import-karte.handler
+    name: ${sls:stage}-data-processing-gas-import-karte
+    description: Processes data for Gas Import Karte
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-import/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-import-historical-values-v2:
+    handler: dist/functions/data-processing/gas-import/gas-import-historical-values-v2.handler
+    name: ${sls:stage}-data-processing-gas-import-historical-values-v2
+    description: Processes data for Gas Import historical values Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-import/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-kkw-produktion-ch-v1:
+    handler: dist/functions/data-processing/strom-kkw/strom-kkw-produktion-ch.handler
+    name: ${sls:stage}-data-processing-strom-kkw-produktion-ch-v1
+    description: Processes KKW production data for CH V1
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-kkw/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-kkw-produktion-fr-v1:
+    handler: dist/functions/data-processing/strom-kkw/strom-kkw-produktion-fr.handler
+    name: ${sls:stage}-data-processing-strom-kkw-produktion-fr-v1
+    description: Processes KKW production data for FR
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-kkw/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-kkw-ausfaelle-v1:
+    handler: dist/functions/data-processing/strom-kkw/strom-kkw-ausfaelle.handler
+    name: ${sls:stage}-data-processing-strom-kkw-ausfaelle-v1
+    description: Processes KKW ausfaelle data
+    timeout: 120 # Large file, takes longer
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-kkw/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-kkw-verfuegbarkeit:
+    handler: dist/functions/data-processing/strom-kkw/strom-kkw-verfuegbarkeit.handler
+    name: ${sls:stage}-data-processing-strom-kkw-verfuegbarkeit
+    description: Processes KKW verfuegbarkeit data
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-kkw/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-produktionsmix:
+    handler: dist/functions/data-processing/strom-produktion/strom-produktionsmix.handler
+    name: ${sls:stage}-data-processing-strom-produktionsmix
+    description: Processes data for Strom produktionsmix
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-produktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-produktion-import-verbrauch:
+    handler: dist/functions/data-processing/strom-produktion/strom-produktion-import-verbrauch.handler
+    name: ${sls:stage}-data-processing-strom-produktion-import-verbrauch
+    description: Processes data for Strom Produktion, Import & Verbrauch
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-produktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-verbrauch-historical-values:
+    handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-historical-values.handler
+    name: ${sls:stage}-data-processing-strom-verbrauch-historical-values
+    description: Processes data for Strom Verbrauch historical values
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-verbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-verbrauch-landesverbrauch-mit-prognose-v2:
+    handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-landesverbrauch-mit-prognose-v2.handler
+    name: ${sls:stage}-data-processing-landesverbrauch-prognose-v2
+    description: Processes data for Strom Verbrauch Landesverbrauch mit Prognose Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-verbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-verbrauch-endverbrauch-v2:
+    handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-endverbrauch-v2.handler
+    name: ${sls:stage}-data-processing-strom-verbrauch-endverbrauch-v2
+    description: Processes data for Strom Verbrauch Endverbrauch Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-verbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-verbrauch-landesverbrauch:
+    handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-landesverbrauch.handler
+    name: ${sls:stage}-data-processing-strom-verbrauch-landesverbrauch
+    description: Processes data for Strom Verbrauch Landesverbrauch
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-verbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-verbrauch-landesverbrauch-vergleich-v2:
+    handler: dist/functions/data-processing/strom-verbrauch/strom-verbrauch-landesverbrauch-vergleich-v2.handler
+    name: ${sls:stage}-data-processing-strom-landesverbrauch-vergleich-v2
+    description: Processes data for Strom Verbrauch Landesverbrauch Vergleich Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-verbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-sparziel-ziel:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-ziel.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-ziel
+    description: Processes data for Strom Sparziel Ziel
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-sparziel-ziel-v4:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-ziel-v4.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-ziel-v4
+    description: Processes data for Strom Sparziel Ziel V4
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-sparziel-aktuelle-einsparung:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-aktuelle-einsparung.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-aktuelle-einsparung
+    description: Processes data for Strom Sparziel Aktuelle Einsparung
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-sparziel-aktuelle-einsparung-v2:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-aktuelle-einsparung-v2.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-aktuelle-einsparung-v2
+    description: Processes data for Strom Sparziel Aktuelle Einsparung Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-sparziel-aktuelle-einsparung-v4:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-aktuelle-einsparung-v4.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-aktuelle-einsparung-v4
+    description: Processes data for Strom Sparziel Aktuelle Einsparung Version 4
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-sparziel-einsparung-aktueller-monat-kundengruppe:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-einsparung-aktueller-monat-kundengruppe.handler
+    name: ${sls:stage}-data-processing-sparziel-aktueller-monat-kundengruppe
+    description: Processes data for Strom Sparziel Einsparung Aktueller Monat Kundengruppe
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-sparziel-einsparung-pro-monat-kundengruppe:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-einsparung-pro-monat-kundengruppe.handler
+    name: ${sls:stage}-data-processing-sparziel-pro-monat-kundengruppe
+    description: Processes data for Strom Sparziel Einsparung Pro Monat Kundengruppe
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-sparziel-ziel-aktueller-monat-kundengruppe:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-ziel-aktueller-monat-kundengruppe.handler
+    name: ${sls:stage}-data-processing-sparziel-ziel-aktueller-monat-kundengruppe
+    description: Processes data for Strom Sparziel Ziel Aktueller Monat Kundengruppe
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-sparziel-5-prozent-peak-h:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-5-prozent-peak-h.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-5-prozent-peak-h
+    description: Processes data for Strom Sparziel 5 Prozent Peak H
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-sparziel-5-prozent-einsparungen:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-5-prozent-einsparungen.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-5-prozent-einsparungen
+    description: Processes data for Strom Sparziel 5 Prozent Einsparungen
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-ziel:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-ziel.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-ziel
+    description: Processes data for Gas Sparziel Ziel
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-ziel-v2:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-ziel-v2.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-ziel-v2
+    description: Processes data for Gas Sparziel Ziel Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-ziel-v4:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-ziel-v4.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-ziel-v4
+    description: Processes data for Gas Sparziel Ziel Version 4
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-aktuelle-einsparung:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-aktuelle-einsparung.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-aktuelle-einsparung
+    description: Processes data for Gas Sparziel Aktuelle Einsparung
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-aktuelle-einsparung-v2:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-aktuelle-einsparung-v2.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-aktuelle-einsparung-v2
+    description: Processes data for Gas Sparziel Aktuelle Einsparung Version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-aktuelle-einsparung-v3:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-aktuelle-einsparung-v3.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-aktuelle-einsparung-v3
+    description: Processes data for Gas Sparziel Aktuelle Einsparung Version 3
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-aktuelle-einsparung-v4:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-aktuelle-einsparung-v4.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-aktuelle-einsparung-v4
+    description: Processes data for Gas Sparziel Aktuelle Einsparung Version 4
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-import-export-uebersicht:
+    handler: dist/functions/data-processing/strom-import-export/strom-import-export-uebersicht.handler
+    name: ${sls:stage}-data-processing-strom-import-export-uebersicht
+    description: Processes data for Uebersicht for Strom Import & Export
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-import-export/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-spartipps:
+    handler: dist/functions/data-processing/spartipps/spartipps.handler
+    name: ${sls:stage}-data-processing-spartipps
+    description: Processes data for Spartipps
+    package:
+      patterns:
+        - dist/functions/data-processing/spartipps/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-spartipps-v2:
+    handler: dist/functions/data-processing/spartipps/spartipps-v2.handler
+    name: ${sls:stage}-data-processing-spartipps-v2
+    description: Processes data for Spartipps, version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/spartipps/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-treibstoff-bleifrei:
+    handler: dist/functions/data-processing/preise/preise-treibstoff-bleifrei.handler
+    name: ${sls:stage}-data-processing-preise-treibstoff-bleifrei
+    description: Processes data for Preise Treibstoff Bleifrei
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-treibstoff-diesel:
+    handler: dist/functions/data-processing/preise/preise-treibstoff-diesel.handler
+    name: ${sls:stage}-data-processing-preise-treibstoff-diesel
+    description: Processes data for Preise Treibstoff Diesel
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-gas-boerse:
+    handler: dist/functions/data-processing/preise/preise-gas-boerse.handler
+    name: ${sls:stage}-data-processing-preise-gas-boerse
+    description: Processes data for Preise Gas Boerse
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-gas-endverbrauch:
+    handler: dist/functions/data-processing/preise/preise-gas-endverbrauch.handler
+    name: ${sls:stage}-data-processing-preise-gas-endverbrauch
+    description: Processes data for Preise Gas Endverbrauch
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-gas-dayahead:
+    handler: dist/functions/data-processing/preise/preise-gas-dayahead.handler
+    name: ${sls:stage}-data-processing-preise-gas-dayahead
+    description: Processes data for Preise Gas Dayahead
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-gas-futures:
+    handler: dist/functions/data-processing/preise/preise-gas-futures.handler
+    name: ${sls:stage}-data-processing-preise-gas-futures
+    description: Processes data for Preise Gas Futures
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-heizoel-entwicklung:
+    handler: dist/functions/data-processing/preise/preise-heizoel-entwicklung.handler
+    name: ${sls:stage}-data-processing-preise-heizoel-entwicklung
+    description: Processes data for Preise Heizoel Entwicklung
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-strom-boerse:
+    handler: dist/functions/data-processing/preise/preise-strom-boerse.handler
+    name: ${sls:stage}-data-processing-preise-strom-boerse
+    description: Processes data for Preise Strom Boerse
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-strom-endverbrauch:
+    handler: dist/functions/data-processing/preise/preise-strom-endverbrauch.handler
+    name: ${sls:stage}-data-processing-preise-strom-endverbrauch
+    description: Processes data for Preise Strom Endverbrauch
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-strom-futures:
+    handler: dist/functions/data-processing/preise/preise-strom-futures.handler
+    name: ${sls:stage}-data-processing-preise-strom-futures
+    description: Processes data for Preise Strom Futures
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-brennholz-endverbrauch:
+    handler: dist/functions/data-processing/preise/preise-brennholz-endverbrauch.handler
+    name: ${sls:stage}-data-processing-preise-brennholz-endverbrauch
+    description: Processes data for Preise Brennholz Endverbrauch
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-fernwaerme-endverbrauch:
+    handler: dist/functions/data-processing/preise/preise-fernwaerme-endverbrauch.handler
+    name: ${sls:stage}-data-processing-preise-fernwaerme-endverbrauch
+    description: Processes data for Preise Fernwaerme Endverbrauch
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-wetter-temperatur-aktuell:
+    handler: dist/functions/data-processing/wetter/wetter-temperatur-aktuell.handler
+    name: ${sls:stage}-data-processing-wetter-temperatur-aktuell
+    description: Processes data for Wetter Temperatur Aktuell
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-wetter-temperatur-prognose:
+    handler: dist/functions/data-processing/wetter/wetter-temperatur-prognose.handler
+    name: ${sls:stage}-data-processing-wetter-temperatur-prognose
+    description: Processes data for Wetter Temperatur Prognose
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-wetter-temperatur-trend:
+    handler: dist/functions/data-processing/wetter/wetter-temperatur-trend.handler
+    name: ${sls:stage}-data-processing-wetter-temperatur-trend
+    description: Processes data for Wetter Temperatur Trend
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-wetter-temperatur-trend-v2:
+    handler: dist/functions/data-processing/wetter/wetter-temperatur-trend-v2.handler
+    name: ${sls:stage}-data-processing-wetter-temperatur-trend-v2
+    description: Processes data for Wetter Temperatur Trend version 2
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-wetter-niederschlag:
+    handler: dist/functions/data-processing/wetter/wetter-niederschlag.handler
+    name: ${sls:stage}-data-processing-wetter-niederschlag
+    description: Processes data for Wetter Niederschlag
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-wetter-schneereserven:
+    handler: dist/functions/data-processing/wetter/wetter-schneereserven.handler
+    name: ${sls:stage}-data-processing-wetter-schneereserven
+    description: Processes data for Wetter Schneereserven
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-images:
+    handler: dist/functions/data-processing/images/images.handler
+    name: ${sls:stage}-data-processing-images
+    description: Processes data for Images
+    package:
+      patterns:
+        - dist/functions/data-processing/images/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    GasSparzielZielV4Table:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-gas-sparziel-ziel-v4
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    StromSparzielZielV4Table:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-ziel-v4
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    PreiseFuturesGasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-preise-gas-futures
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    PreiseFuturesStromTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-preise-strom-futures
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    StromKkwVerfuegbarkeitTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-kkw-verfuegbarkeit
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: country
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: country-index
+            Projection:
+              NonKeyAttributes:
+                - country
+              ProjectionType: INCLUDE
+            KeySchema:
+              - AttributeName: country
+                KeyType: HASH
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    StromSparziel5ProzentPeakHTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-5-prozent-peak-h
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    StromSparziel5ProzentEinsparungenTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-5-prozent-einsparungen
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    WetterNiederschlagTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-wetter-niederschlag
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    WetterSchneerservenTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-wetter-schneereserven
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    DynamicTranslationsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-dynamic-translations
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    StromSparzielEinsparungAktuellerMonatKundengruppeTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-einsparung-aktueller-monat-kundengruppe
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    StromSparzielEinsparungProMonatKundengruppeTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-einsparung-pro-monat-kundengruppe
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    StromSparzielZielAktuellerMonatKundengruppeTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-ziel-aktueller-monat-kundengruppe
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}

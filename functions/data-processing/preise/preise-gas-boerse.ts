@@ -1,9 +1,6 @@
 import { Context, S3Event } from 'aws-lambda';
-import { saveAllPreiseGasBoerse } from '/opt/nodejs/db/preise/preise-gas-boerse.db';
-import {
-    map,
-    PreiseGasBoerseSource
-} from '/opt/nodejs/models/preise/preise-gas-boerse.model';
+import { deleteAllPreiseGasBoerse, saveAllPreiseGasBoerse } from '/opt/nodejs/db/preise/preise-gas-boerse.db';
+import { map, PreiseGasBoerseSource } from '/opt/nodejs/models/preise/preise-gas-boerse.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 
@@ -22,5 +19,7 @@ const processPreiseGasBoerse = async () => {
         SourceFiles.PREISE_GAS_BOERSE
     );
     const data = map(records);
+
+    await deleteAllPreiseGasBoerse();
     await saveAllPreiseGasBoerse(data);
 };

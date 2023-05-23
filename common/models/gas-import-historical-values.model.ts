@@ -1,3 +1,6 @@
+import { BaseModel } from './base/base.model';
+import { FiveYearWithDiffStatisticsModel } from './base/statistics.model';
+import { TrendModel } from './base/trend.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
 
@@ -15,26 +18,24 @@ export interface GasImportHistoricalValueSource {
     TrendRating: string;
 }
 
-export interface GasImportHistoricalValue {
-    id: string;
+export interface GasImportHistoricalValue
+    extends BaseModel,
+        FiveYearWithDiffStatisticsModel,
+        TrendModel {
     monat: number;
     jahr: number;
     nettoimport: number | null;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
-    differenzMittelwert: number | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
-    trend: Trend | null;
-    trendRating: TrendRating | null;
 }
 
-export const map = (records: GasImportHistoricalValueSource[]): GasImportHistoricalValue[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: GasImportHistoricalValueSource[]
+): GasImportHistoricalValue[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-const mapRecord = (record: GasImportHistoricalValueSource): GasImportHistoricalValue => ({
+const mapRecord = (
+    record: GasImportHistoricalValueSource
+): GasImportHistoricalValue => ({
     id: createId(record.Monat, record.Jahr),
     monat: parseInt(record.Monat),
     jahr: parseInt(record.Jahr),
@@ -46,9 +47,9 @@ const mapRecord = (record: GasImportHistoricalValueSource): GasImportHistoricalV
     differenzMin: parseFloatOrNullForNA(record.Differenz_min),
     differenzMax: parseFloatOrNullForNA(record.Differenz_max),
     trend: Trend[record.Trend],
-    trendRating: TrendRating[record.TrendRating],
-})
+    trendRating: TrendRating[record.TrendRating]
+});
 
 export const createId = (month: string, year: string) => {
     return `${month}-${year}`;
-}
+};

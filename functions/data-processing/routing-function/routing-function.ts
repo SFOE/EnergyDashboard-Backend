@@ -1,8 +1,9 @@
 import { Aws } from '/opt/nodejs/aws.constants';
-import { RoutingFunctions } from '/opt/nodejs/source-files';
+import { ImagesProcessingFunction, RoutingFunctions } from '/opt/nodejs/source-files';
 import { withEnvPrefix } from '/opt/nodejs/utils/env.utils';
-import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { Context, S3Event } from 'aws-lambda';
+import { containsSVGinFilename } from '/opt/nodejs/utils/string.utils';
 
 export const handler = async (event: S3Event, context: Context): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -15,14 +16,22 @@ export const handler = async (event: S3Event, context: Context): Promise<any> =>
 };
 
 const routeFunction = async (fileName: string) => {
-    const routingFunction = RoutingFunctions[fileName];
+    let targetFunction: string;
 
-    if (!routingFunction) {
-        console.log(`no target function found for file ${fileName}. Is the source-files.ts file properly updated?`);
-        return true;
+    if (containsSVGinFilename(fileName)) {
+        // Handles all svg images
+        targetFunction = withEnvPrefix(ImagesProcessingFunction);
+    } else {
+        // Handles all other files
+        const routingFunction = RoutingFunctions[fileName];
+
+        if (!routingFunction) {
+            console.log(`no target function found for file ${fileName}. Is the source-files.ts file properly updated?`);
+            return true;
+        }
+
+        targetFunction = withEnvPrefix(routingFunction);
     }
-
-    const targetFunction = withEnvPrefix(routingFunction);
 
     try {
         await invoke(targetFunction, { fileName });
@@ -34,17 +43,17 @@ const routeFunction = async (fileName: string) => {
         console.error(message);
         throw new Error(message);
     }
-}
+};
 
 const invoke = async (funcName, payload) => {
     const client = new LambdaClient({
-        region: Aws.region,
+        region: Aws.region
     });
 
-    console.log(`Invoking function ${funcName} with payload ${JSON.stringify(payload)}`)
+    console.log(`Invoking function ${funcName} with payload ${JSON.stringify(payload)}`);
     const command = new InvokeCommand({
         FunctionName: funcName,
-        Payload: Buffer.from(JSON.stringify(payload)),
+        Payload: Buffer.from(JSON.stringify(payload))
     });
 
     console.log('Sending command');

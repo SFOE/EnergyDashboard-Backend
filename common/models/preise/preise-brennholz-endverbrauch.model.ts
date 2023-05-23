@@ -1,8 +1,9 @@
 import {
+    mapPreisCommon,
     PreiseCommon,
     PreiseCommonSource
 } from '/opt/nodejs/models/preise/preise.common.model';
-import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
+import { filterRelevantPriceEntries } from '/opt/nodejs/utils/preise.utils';
 
 export interface PreiseBrennholzEndverbrauchSource extends PreiseCommonSource {}
 
@@ -11,12 +12,12 @@ export interface PreiseBrennholzEndverbrauch extends PreiseCommon {}
 export const map = (
     records: PreiseBrennholzEndverbrauchSource[]
 ): PreiseBrennholzEndverbrauch[] => {
-    return records.map((record) => mapRecord(record));
+    return filterRelevantPriceEntries(
+        records.map((record) => mapRecord(record))
+    );
 };
 
 const mapRecord = (
     record: PreiseBrennholzEndverbrauchSource
-): PreiseBrennholzEndverbrauch => ({
-    date: record.Datum,
-    preisIndexiert: parseFloatOrNullForNA(record.Preis_LIK_indexiert)
-});
+): PreiseBrennholzEndverbrauch =>
+    mapPreisCommon(record.Preis_LIK_indexiert, record.Datum);

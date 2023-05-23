@@ -1,20 +1,20 @@
+import { DateModel } from '../models/base/date.model';
+import { dateSortFn } from '../utils/sort.utils';
 import { StromProduktionImportVerbrauch } from '/opt/nodejs/models/strom-produktion-import-verbrauch.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 
 export interface StromProduktionImportVerbrauchApi {
-    currentEntry: StromProduktionImportVerbrauchCurrentEntryApi,
-    entries: StromProduktionImportVerbrauchEntryApi[]
+    currentEntry: StromProduktionImportVerbrauchCurrentEntryApi;
+    entries: StromProduktionImportVerbrauchEntryApi[];
 }
 
-interface StromProduktionImportVerbrauchCurrentEntryApi {
-    datum: Date,
+interface StromProduktionImportVerbrauchCurrentEntryApi extends DateModel {
     eigenproduktion: number;
     trend: Trend;
     trendRating: TrendRating;
 }
 
-export interface StromProduktionImportVerbrauchEntryApi {
-    datum: Date;
+export interface StromProduktionImportVerbrauchEntryApi extends DateModel {
     stromverbrauch: number;
     kernkraft: number;
     thermische: number;
@@ -26,35 +26,40 @@ export interface StromProduktionImportVerbrauchEntryApi {
     nettoimporte: number;
 }
 
-export const mapToApiModel = (entries: StromProduktionImportVerbrauch[]): StromProduktionImportVerbrauchApi => {
+export const mapToApiModel = (
+    entries: StromProduktionImportVerbrauch[]
+): StromProduktionImportVerbrauchApi => {
     const currentEntry = getCurrentEntry(entries);
     const mappedCurrentEntry = mapCurrentEntry(currentEntry);
-    const mappedEntries = entries.map(entry => mapEntry(entry))
+    const mappedEntries = entries.map((entry) => mapEntry(entry));
 
     return {
         currentEntry: mappedCurrentEntry,
-        entries: mappedEntries,
-    }
-}
+        entries: mappedEntries
+    };
+};
 
 const getCurrentEntry = (records: StromProduktionImportVerbrauch[]) => {
-    return records.sort(sortFn)
+    return records
+        .sort(dateSortFn)
         .slice()
         .reverse()
-        .find(entry => entry.stromverbrauch !== null);
-}
+        .find((entry) => entry.stromverbrauch !== null);
+};
 
-const sortFn = (a: StromProduktionImportVerbrauch, b: StromProduktionImportVerbrauch) => new Date(a.datum).getTime() - new Date(b.datum).getTime();
-
-const mapCurrentEntry = (entry: StromProduktionImportVerbrauch): StromProduktionImportVerbrauchCurrentEntryApi => ({
-    datum: new Date(entry.datum),
+const mapCurrentEntry = (
+    entry: StromProduktionImportVerbrauch
+): StromProduktionImportVerbrauchCurrentEntryApi => ({
+    date: entry.date,
     eigenproduktion: entry.eigenproduktion,
     trend: entry.trend,
-    trendRating: entry.trendRating,
+    trendRating: entry.trendRating
 });
 
-const mapEntry = (entry: StromProduktionImportVerbrauch): StromProduktionImportVerbrauchEntryApi => ({
-    datum: new Date(entry.datum),
+const mapEntry = (
+    entry: StromProduktionImportVerbrauch
+): StromProduktionImportVerbrauchEntryApi => ({
+    date: entry.date,
     stromverbrauch: entry.stromverbrauch,
     kernkraft: entry.kernkraft,
     thermische: entry.thermische,
@@ -63,5 +68,5 @@ const mapEntry = (entry: StromProduktionImportVerbrauch): StromProduktionImportV
     wind: entry.wind,
     photovoltaik: entry.photovoltaik,
     eigenproduktion: entry.eigenproduktion,
-    nettoimporte: entry.nettoimporte,
+    nettoimporte: entry.nettoimporte
 });

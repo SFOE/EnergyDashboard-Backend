@@ -34,3 +34,7 @@ export const isNumber = (value: any): boolean => {
     const isDefined = value !== '' && value !== null && value !== undefined;
     return isDefined && !Number.isNaN(value);
 };
+
+export const roundOneDecimal = (num: number) => {
+    return Math.round(num * 10) / 10;
+};

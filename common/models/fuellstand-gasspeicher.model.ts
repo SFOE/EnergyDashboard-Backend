@@ -1,3 +1,6 @@
+import { BaseModel } from './base/base.model';
+import { DiffStatisticsModel } from './base/statistics.model';
+import { TrendModel } from './base/trend.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
 import { parseStringOrNullForNA } from '/opt/nodejs/utils/string.utils';
@@ -16,7 +19,7 @@ export interface FuellstandGasspeicherSource {
     MA_Trend: string;
     Trend: string;
     TrendRating: string;
-    Speicherstand_TWh: string
+    Speicherstand_TWh: string;
 }
 
 export enum FuellstandGasspeicherRegion {
@@ -27,29 +30,30 @@ export enum FuellstandGasspeicherRegion {
     EU = 'EU'
 }
 
-export interface FuellstandGasspeicher {
-    id: string;
+export interface FuellstandGasspeicher
+    extends BaseModel,
+        DiffStatisticsModel,
+        TrendModel {
     speicherstandProzent: number | null;
     speicherstandTWh: number | null;
     min: number;
     max: number;
     mittel: number;
     monat: number;
-    tag: number
+    tag: number;
     region: FuellstandGasspeicherRegion;
-    differenzMittelwert: number | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
     trendMovingAverage: number | null;
-    trend: Trend | null;
-    trendRating: TrendRating | null;
 }
 
-export const map = (records: FuellstandGasspeicherSource[]): FuellstandGasspeicher[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: FuellstandGasspeicherSource[]
+): FuellstandGasspeicher[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-const mapRecord = (record: FuellstandGasspeicherSource): FuellstandGasspeicher => ({
+const mapRecord = (
+    record: FuellstandGasspeicherSource
+): FuellstandGasspeicher => ({
     id: createId(record.Speicherregion, record.Monat, record.Tag),
     speicherstandProzent: parseFloatOrNullForNA(record.Speicherstand_prozent),
     speicherstandTWh: parseFloatOrNullForNA(record.Speicherstand_TWh),
@@ -64,9 +68,9 @@ const mapRecord = (record: FuellstandGasspeicherSource): FuellstandGasspeicher =
     differenzMax: parseFloatOrNullForNA(record.Differenz_max),
     trendMovingAverage: parseFloatOrNullForNA(record.MA_Trend),
     trend: parseStringOrNullForNA(record.Trend) as Trend,
-    trendRating: parseStringOrNullForNA(record.TrendRating) as TrendRating,
-})
+    trendRating: parseStringOrNullForNA(record.TrendRating) as TrendRating
+});
 
 export const createId = (region: string, month: string, day: string) => {
     return `${region}-${month}-${day}`;
-}
+};

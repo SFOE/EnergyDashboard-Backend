@@ -1,3 +1,5 @@
+import { DateModel } from './base/date.model';
+import { TrendModel } from './base/trend.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
 
@@ -17,8 +19,7 @@ export interface StromProduktionImportVerbrauchSource {
     TrendRating: string;
 }
 
-export interface StromProduktionImportVerbrauch {
-    datum: string;
+export interface StromProduktionImportVerbrauch extends DateModel, TrendModel {
     stromverbrauch: number;
     kernkraft: number;
     thermische: number;
@@ -28,17 +29,19 @@ export interface StromProduktionImportVerbrauch {
     photovoltaik: number | null;
     eigenproduktion: number;
     nettoimporte: number;
-    trend: Trend | null;
-    trendRating: TrendRating | null;
     trendMovingAverage: number | null;
 }
 
-export const map = (records: StromProduktionImportVerbrauchSource[]): StromProduktionImportVerbrauch[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: StromProduktionImportVerbrauchSource[]
+): StromProduktionImportVerbrauch[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-const mapRecord = (record: StromProduktionImportVerbrauchSource): StromProduktionImportVerbrauch => ({
-    datum: record.Datum,
+const mapRecord = (
+    record: StromProduktionImportVerbrauchSource
+): StromProduktionImportVerbrauch => ({
+    date: record.Datum,
     stromverbrauch: parseFloat(record.Stromverbrauch),
     kernkraft: parseFloat(record.Kernkraft),
     thermische: parseFloat(record.Thermische),
@@ -50,5 +53,5 @@ const mapRecord = (record: StromProduktionImportVerbrauchSource): StromProduktio
     nettoimporte: parseFloat(record.Nettoimporte),
     trend: Trend[record.Trend],
     trendRating: TrendRating[record.TrendRating],
-    trendMovingAverage: parseFloatOrNullForNA(record.MA_Trend),
-})
+    trendMovingAverage: parseFloatOrNullForNA(record.MA_Trend)
+});

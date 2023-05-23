@@ -1,3 +1,5 @@
+import { BaseModel } from './base/base.model';
+import { TrendModel } from './base/trend.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 
 export interface GasSparzielZielSource {
@@ -11,26 +13,25 @@ export interface GasSparzielZielSource {
     TrendRating: string;
 }
 
-export interface GasSparzielZiel {
-    id: string;
+export interface GasSparzielZiel extends BaseModel, TrendModel {
     standMonat: number;
     standJahr: number;
     kumulierteMonatlicheEinsparungGWh: number;
     kumulierteEinsparungProzent: number;
     sparzielGWh: number;
     standSparzielProzent: number;
-    trend: Trend;
-    trendRating: TrendRating;
 }
 
 export const map = (record: GasSparzielZielSource): GasSparzielZiel => ({
     id: `${record.Stand_Monat}-${record.Stand_Jahr}`,
     standMonat: parseInt(record.Stand_Monat),
     standJahr: parseInt(record.Stand_Jahr),
-    kumulierteMonatlicheEinsparungGWh: parseInt(record.Kumulierte_Monatliche_Einsparung_GWh),
+    kumulierteMonatlicheEinsparungGWh: parseInt(
+        record.Kumulierte_Monatliche_Einsparung_GWh
+    ),
     kumulierteEinsparungProzent: parseInt(record.Kumulierte_Einsparung_Prozent),
     sparzielGWh: parseInt(record.Sparziel_GWh),
     standSparzielProzent: parseInt(record.Stand_Sparziel_Prozent),
     trend: Trend[record.Trend],
-    trendRating: TrendRating[record.TrendRating],
-})
+    trendRating: TrendRating[record.TrendRating]
+});

@@ -1,11 +1,12 @@
-import { WetterTemperaturPrognose } from '/opt/nodejs/models/wetter-temperatur-prognose.model';
+import { DateModel } from '/opt/nodejs/models/base/date.model';
+import { WetterTemperaturPrognose } from '/opt/nodejs/models/wetter/wetter-temperatur-prognose.model';
+import { dateSortFn } from '/opt/nodejs/utils/sort.utils';
 
 export interface WetterTemperaturPrognoseApi {
     [station: string]: WetterTemperaturPrognoseEntryApi[];
 }
 
-interface WetterTemperaturPrognoseEntryApi {
-    datum: string;
+interface WetterTemperaturPrognoseEntryApi extends DateModel {
     lufttemperaturPrognose: number | null;
     lufttemperaturTagesmittelNorm: number;
     fiveYearMin: number;
@@ -15,43 +16,45 @@ interface WetterTemperaturPrognoseEntryApi {
     differenzMax: number | null;
 }
 
-export const mapToApiModel = (records: WetterTemperaturPrognose[]): WetterTemperaturPrognoseApi => {
+export const mapToApiModel = (
+    records: WetterTemperaturPrognose[]
+): WetterTemperaturPrognoseApi => {
     const response = {};
-    records.forEach(record => {
+    records.forEach((record) => {
         if (!response[record.station]) {
             response[record.station] = [];
         }
 
         response[record.station].push(mapToApi(record));
-    })
+    });
 
-    for (const value of Object.values<WetterTemperaturPrognoseEntryApi[]>(response)) {
-        value.sort(sortFn);
+    for (const value of Object.values<WetterTemperaturPrognoseEntryApi[]>(
+        response
+    )) {
+        value.sort(dateSortFn);
     }
 
     return response;
 };
 
 const mapToApi = ({
-    datum,
+    date,
     lufttemperaturPrognose,
     lufttemperaturTagesmittelNorm,
     fiveYearMin,
     fiveYearMax,
     differenzNorm,
     differenzMin,
-    differenzMax,
+    differenzMax
 }: WetterTemperaturPrognose): WetterTemperaturPrognoseEntryApi => {
     return {
-        datum,
+        date,
         lufttemperaturPrognose,
         lufttemperaturTagesmittelNorm,
         fiveYearMin,
         fiveYearMax,
         differenzNorm,
         differenzMin,
-        differenzMax,
-    }
-}
-
-const sortFn = (a: WetterTemperaturPrognoseEntryApi, b: WetterTemperaturPrognoseEntryApi) => new Date(a.datum).getTime() - new Date(b.datum).getTime();
+        differenzMax
+    };
+};

@@ -235,4 +235,7 @@ $RECYCLE.BIN/
 # envrc files
 .envrc
 
+# VS Code files
+.vscode/
+
 # End of https://www.toptal.com/developers/gitignore/api/osx,node,linux,windows,sam

@@ -1,9 +1,9 @@
 import { Context, S3Event } from 'aws-lambda';
-import { saveAllPreiseStromEndverbrauch } from '/opt/nodejs/db/preise/preise-strom-endverbrauch.db';
 import {
-    map,
-    PreiseStromEndverbrauchSource
-} from '/opt/nodejs/models/preise/preise-strom-endverbrauch.model';
+    deleteAllPreiseStromEndverbrauch,
+    saveAllPreiseStromEndverbrauch
+} from '/opt/nodejs/db/preise/preise-strom-endverbrauch.db';
+import { map, PreiseStromEndverbrauchSource } from '/opt/nodejs/models/preise/preise-strom-endverbrauch.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 
@@ -22,5 +22,7 @@ const processPreiseStromEndverbrauch = async () => {
         SourceFiles.PREISE_STROM_ENDVERBRAUCH
     );
     const data = map(records);
+
+    await deleteAllPreiseStromEndverbrauch();
     await saveAllPreiseStromEndverbrauch(data);
 };

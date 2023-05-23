@@ -1,19 +1,18 @@
-import { GasImportHistoricalValue } from '/opt/nodejs/models/gas-import-historical-values.model';
+import { DateModel } from '../models/base/date.model';
+import { FiveYearWithDiffStatisticsModel } from '../models/base/statistics.model';
 import { mapDateYearAndMonth } from '../utils/date.utils';
+import { GasImportHistoricalValue } from '/opt/nodejs/models/gas-import-historical-values.model';
 
-export interface GasImportHistoricalValuesApi {
+export interface GasImportHistoricalValuesApi
+    extends DateModel,
+        FiveYearWithDiffStatisticsModel {
     nettoimport: number | null;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
-    date: string;
-    differenzMittelwert: number | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
 }
 
-export const mapToApiModel = (records: GasImportHistoricalValue[]): GasImportHistoricalValuesApi[] => {
-    return records.map(record => mapToApi(record));
+export const mapToApiModel = (
+    records: GasImportHistoricalValue[]
+): GasImportHistoricalValuesApi[] => {
+    return records.map((record) => mapToApi(record));
 };
 
 const mapToApi = ({
@@ -25,7 +24,7 @@ const mapToApi = ({
     fiveYearMittelwert,
     differenzMittelwert,
     differenzMin,
-    differenzMax,
+    differenzMax
 }: GasImportHistoricalValue): GasImportHistoricalValuesApi => {
     return {
         nettoimport,
@@ -35,6 +34,6 @@ const mapToApi = ({
         date: mapDateYearAndMonth(jahr, monat),
         differenzMittelwert,
         differenzMin,
-        differenzMax,
-    }
-}
+        differenzMax
+    };
+};

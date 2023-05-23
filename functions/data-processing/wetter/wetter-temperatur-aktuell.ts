@@ -2,11 +2,11 @@ import { Context, S3Event } from 'aws-lambda';
 import {
     deleteAllWetterTemperaturAktuell,
     saveAllWetterTemperaturAktuell
-} from '/opt/nodejs/db/wetter-temperatur-aktuell.db';
+} from '/opt/nodejs/db/wetter/wetter-temperatur-aktuell.db';
 import {
     map,
     WetterTemperaturAktuellSource
-} from '/opt/nodejs/models/wetter-temperatur-aktuell.model';
+} from '/opt/nodejs/models/wetter/wetter-temperatur-aktuell.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { isNumber } from '/opt/nodejs/utils/number.utils';

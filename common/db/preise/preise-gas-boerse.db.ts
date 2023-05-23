@@ -1,4 +1,4 @@
-import { fetchAll, saveAll } from '/opt/nodejs/db/db-requests';
+import { deleteAll, fetchAll, saveAll } from '/opt/nodejs/db/db-requests';
 import { DynamoDBTables } from '/opt/nodejs/db/db-tables';
 import { PreiseGasBoerse } from '/opt/nodejs/models/preise/preise-gas-boerse.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
@@ -19,4 +19,8 @@ export const fetchCurrentPreiseGasBoerse =
 
 export const saveAllPreiseGasBoerse = async (data: PreiseGasBoerse[]) => {
     await saveAll(tableName, data);
+};
+
+export const deleteAllPreiseGasBoerse = async () => {
+    await deleteAll(tableName);
 };

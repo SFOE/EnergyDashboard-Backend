@@ -26,11 +26,27 @@ Hotfix for Gas Sparziel on Overview
 Hotfix for Strom Produktionsmix due to year-end change
 
 ## v1.1.3 - 18.01.2023
+
 Hotfix for missing Meteo Stations in weather data
 
 ## v1.2.0 - 26.01.2023
+
 Feature Release for the following KPIs
+
 - Strom Sparziel
 - Preise Brennholz
 - Preise Fernwärme
+-
+
+## v2.0.0 - 26.01.2023
+
+Feature Release for the following KPIs
+
+- Strom Produktion KKW CH / FR
+- Strom Sparziel 10%
+- Strom Sparziel 5%
+- Wetter Niederschläge
+- Wetter Schneereserven
+  Improvements to Prices
+  Improvements to Gas Sparziel
 

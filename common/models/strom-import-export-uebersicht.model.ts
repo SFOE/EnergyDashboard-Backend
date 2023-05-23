@@ -1,3 +1,4 @@
+import { DateModel } from './base/date.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 
 export interface StromImportExportUebersichtSource {
@@ -10,8 +11,7 @@ export interface StromImportExportUebersichtSource {
     TrendRating_Export: string;
 }
 
-export interface StromImportExportUebersicht {
-    datum: string;
+export interface StromImportExportUebersicht extends DateModel {
     importGWh: number;
     exportGWh: number;
     trendImport: Trend;
@@ -20,16 +20,20 @@ export interface StromImportExportUebersicht {
     trendRatingExport: TrendRating;
 }
 
-export const map = (records: StromImportExportUebersichtSource[]): StromImportExportUebersicht[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: StromImportExportUebersichtSource[]
+): StromImportExportUebersicht[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-const mapRecord = (record: StromImportExportUebersichtSource): StromImportExportUebersicht => ({
-    datum: record.Datum,
+const mapRecord = (
+    record: StromImportExportUebersichtSource
+): StromImportExportUebersicht => ({
+    date: record.Datum,
     importGWh: parseFloat(record.Import_GWh),
     exportGWh: parseFloat(record.Export_GWh),
     trendImport: Trend[record.Trend_Import],
     trendRatingImport: TrendRating[record.TrendRating_Import],
     trendExport: Trend[record.Trend_Export],
-    trendRatingExport: TrendRating[record.TrendRating_Export],
-})
+    trendRatingExport: TrendRating[record.TrendRating_Export]
+});

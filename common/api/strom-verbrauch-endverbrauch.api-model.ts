@@ -1,22 +1,21 @@
-import { StromVerbrauchEndverbrauch } from '/opt/nodejs/models/strom-verbrauch-endverbrauch.model';
+import { DateModel } from '../models/base/date.model';
+import { FiveYearWithDiffStatisticsModel } from '../models/base/statistics.model';
 import { mapDateMonthAndDay } from '../utils/date.utils';
+import { StromVerbrauchEndverbrauch } from '/opt/nodejs/models/strom-verbrauch-endverbrauch.model';
 
-export interface StromVerbrauchEndverbrauchApi {
+export interface StromVerbrauchEndverbrauchApi
+    extends DateModel,
+        FiveYearWithDiffStatisticsModel {
     endverbrauch: number | null;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
-    date: string;
-    differenzMittelwert: number | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
     prognoseMittelwert: number | null;
     prognoseMin: number | null;
     prognoseMax: number | null;
 }
 
-export const mapToApiModel = (records: StromVerbrauchEndverbrauch[]): StromVerbrauchEndverbrauchApi[] => {
-    return records.map(record => mapToApi(record));
+export const mapToApiModel = (
+    records: StromVerbrauchEndverbrauch[]
+): StromVerbrauchEndverbrauchApi[] => {
+    return records.map((record) => mapToApi(record));
 };
 
 const mapToApi = ({
@@ -31,7 +30,7 @@ const mapToApi = ({
     differenzMax,
     prognoseMittelwert,
     prognoseMin,
-    prognoseMax,
+    prognoseMax
 }: StromVerbrauchEndverbrauch): StromVerbrauchEndverbrauchApi => {
     return {
         endverbrauch,
@@ -44,6 +43,6 @@ const mapToApi = ({
         differenzMax,
         prognoseMittelwert,
         prognoseMin,
-        prognoseMax,
-    }
-}
+        prognoseMax
+    };
+};

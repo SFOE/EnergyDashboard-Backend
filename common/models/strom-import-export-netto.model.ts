@@ -1,3 +1,5 @@
+import { DateModel } from './base/date.model';
+import { TrendModel } from './base/trend.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
 
@@ -21,13 +23,10 @@ export interface StromImportExportNettoSource {
     TrendRating: string;
 }
 
-export interface StromImportExportNetto {
-    datum: string;
+export interface StromImportExportNetto extends DateModel, TrendModel {
     import: StromImportExportCountries;
     export: StromImportExportCountries;
     nettoImportCH: number;
-    trend: Trend;
-    trendRating: TrendRating;
     trendMovingAverage: number;
 }
 
@@ -38,12 +37,16 @@ export interface StromImportExportCountries {
     it: number;
 }
 
-export const map = (records: StromImportExportNettoSource[]): StromImportExportNetto[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: StromImportExportNettoSource[]
+): StromImportExportNetto[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-const mapRecord = (record: StromImportExportNettoSource): StromImportExportNetto => ({
-    datum: record.Datum,
+const mapRecord = (
+    record: StromImportExportNettoSource
+): StromImportExportNetto => ({
+    date: record.Datum,
     nettoImportCH: parseFloat(record.Nettoimport_CH_GWh),
     trend: Trend[record.Trend],
     trendRating: TrendRating[record.TrendRating],
@@ -52,12 +55,12 @@ const mapRecord = (record: StromImportExportNettoSource): StromImportExportNetto
         at: parseFloat(record.AT_CH_GWh),
         de: parseFloat(record.DE_CH_GWh),
         fr: parseFloat(record.FR_CH_GWh),
-        it: parseFloat(record.IT_CH_GWh),
+        it: parseFloat(record.IT_CH_GWh)
     },
     export: {
         at: parseFloat(record.CH_AT_GWh),
         de: parseFloat(record.CH_DE_GWh),
         fr: parseFloat(record.CH_FR_GWh),
-        it: parseFloat(record.CH_IT_GWh),
-    },
-})
+        it: parseFloat(record.CH_IT_GWh)
+    }
+});

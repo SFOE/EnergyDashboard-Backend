@@ -1,8 +1,11 @@
-import { GasImportExportCountries, GasImportKarte } from '/opt/nodejs/models/gas-import-karte.model';
+import { DateModel } from '../models/base/date.model';
+import {
+    GasImportExportCountries,
+    GasImportKarte
+} from '/opt/nodejs/models/gas-import-karte.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 
-export interface GasImportKarteApi {
-    datum: Date;
+export interface GasImportKarteApi extends DateModel {
     import: GasImportExportCountries;
     export: GasImportExportCountries;
     nettoImportCH: number;
@@ -12,11 +15,11 @@ export interface GasImportKarteApi {
 
 export const mapToApiModel = (record: GasImportKarte): GasImportKarteApi => {
     return {
-        datum: new Date(record.datum),
+        date: record.date,
         import: record.import,
         export: record.export,
         nettoImportCH: record.nettoImportCH,
         trend: record.trend,
-        trendRating: record.trendRating,
-    }
-}
+        trendRating: record.trendRating
+    };
+};

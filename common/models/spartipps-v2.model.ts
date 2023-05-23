@@ -1,3 +1,5 @@
+import { BaseModel } from './base/base.model';
+
 export interface SpartippsSourceV2 {
     id: string;
     kategorie: string;
@@ -11,8 +13,7 @@ export interface SpartippsSourceV2 {
     text_it: string;
 }
 
-export interface SpartippsV2 {
-    id: string;
+export interface SpartippsV2 extends BaseModel {
     image: string;
     de: SpartippsLanguageEntry;
     fr: SpartippsLanguageEntry;

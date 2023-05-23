@@ -1,10 +1,16 @@
+import { DateModel } from '../models/base/date.model';
+import { FiveYearWithDiffStatisticsModel } from '../models/base/statistics.model';
+import {
+    getYesterday,
+    isBeforeOrEqualsToday,
+    mapDateMonthAndDay
+} from '../utils/date.utils';
 import { StromVerbrauchHistoricalValue } from '/opt/nodejs/models/strom-verbrauch-historical-values.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
-import { getYesterday, isBeforeOrEqualsToday, mapDateMonthAndDay } from '../utils/date.utils';
 
 export interface StromVerbrauchHistoricalValuesApi {
-    currentEntry: StromVerbrauchHistoricalValuesCurrentEntryApi,
-    entries: StromVerbrauchHistoricalValuesEntryApi[]
+    currentEntry: StromVerbrauchHistoricalValuesCurrentEntryApi;
+    entries: StromVerbrauchHistoricalValuesEntryApi[];
 }
 
 export interface StromVerbrauchHistoricalValuesCurrentEntryApi {
@@ -15,56 +21,62 @@ export interface StromVerbrauchHistoricalValuesCurrentEntryApi {
     trendRating: TrendRating;
 }
 
-export interface StromVerbrauchHistoricalValuesEntryApi {
+export interface StromVerbrauchHistoricalValuesEntryApi
+    extends DateModel,
+        FiveYearWithDiffStatisticsModel {
     landesverbrauch: number | null;
     landesverbrauchGeschaetzt: number | null;
     landesverbrauchPrognose: number | null;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
-    date: string;
-    differenzMittelwert: number | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
 }
 
-export const mapToApiModel = (records: StromVerbrauchHistoricalValue[]): StromVerbrauchHistoricalValuesApi => {
+export const mapToApiModel = (
+    records: StromVerbrauchHistoricalValue[]
+): StromVerbrauchHistoricalValuesApi => {
     const entryToday = getEntryYesterday(records);
     console.log(`entryToday: ${entryToday}`);
 
     const entryInFiveDays = getEntryInFiveDays(records);
     console.log(`entryInFiveDays: ${entryInFiveDays}`);
-    const entries = records.map(record => mapToApi(record));
+    const entries = records.map((record) => mapToApi(record));
     return {
         currentEntry: mapCurrentEntry(entryToday, entryInFiveDays),
-        entries,
-    }
+        entries
+    };
 };
 
 const getEntryYesterday = (records: StromVerbrauchHistoricalValue[]) => {
     const yesterday = getYesterday();
     return findEntry(records, yesterday);
-}
+};
 
 const getEntryInFiveDays = (records: StromVerbrauchHistoricalValue[]) => {
-    const date = new Date(new Date().getTime() + (5 * 24 * 60 * 60 * 1000));
+    const date = new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000);
     return findEntry(records, date);
-}
+};
 
-const findEntry = (records: StromVerbrauchHistoricalValue[], date: Date): StromVerbrauchHistoricalValue => {
-    return records
-        .find(entry => entry.monat - 1 === date.getMonth() && entry.tag === date.getDate())
-}
+const findEntry = (
+    records: StromVerbrauchHistoricalValue[],
+    date: Date
+): StromVerbrauchHistoricalValue => {
+    return records.find(
+        (entry) =>
+            entry.monat - 1 === date.getMonth() && entry.tag === date.getDate()
+    );
+};
 
-const mapCurrentEntry = (entry: StromVerbrauchHistoricalValue, entryInFiveDays: StromVerbrauchHistoricalValue): StromVerbrauchHistoricalValuesCurrentEntryApi => {
+const mapCurrentEntry = (
+    entry: StromVerbrauchHistoricalValue,
+    entryInFiveDays: StromVerbrauchHistoricalValue
+): StromVerbrauchHistoricalValuesCurrentEntryApi => {
     return {
         landesverbrauchPrognose: entry.landesverbrauchPrognose,
-        landesverbrauchPrognoseInFiveDays: entryInFiveDays.landesverbrauchPrognose,
+        landesverbrauchPrognoseInFiveDays:
+            entryInFiveDays.landesverbrauchPrognose,
         date: mapDateMonthAndDay(entry.monat, entry.tag),
         trend: entry.trend,
-        trendRating: entry.trendRating,
-    }
-}
+        trendRating: entry.trendRating
+    };
+};
 
 const mapToApi = ({
     monat,
@@ -76,13 +88,15 @@ const mapToApi = ({
     fiveYearMittelwert,
     differenzMittelwert,
     differenzMin,
-    differenzMax,
+    differenzMax
 }: StromVerbrauchHistoricalValue): StromVerbrauchHistoricalValuesEntryApi => {
     const isBeforeToday = isBeforeOrEqualsToday(monat - 1, tag);
 
     return {
         landesverbrauch,
-        landesverbrauchGeschaetzt: isBeforeToday ? landesverbrauchPrognose : null,
+        landesverbrauchGeschaetzt: isBeforeToday
+            ? landesverbrauchPrognose
+            : null,
         landesverbrauchPrognose: isBeforeToday ? null : landesverbrauchPrognose,
         fiveYearMin,
         fiveYearMax,
@@ -90,6 +104,6 @@ const mapToApi = ({
         date: mapDateMonthAndDay(monat, tag),
         differenzMittelwert,
         differenzMin,
-        differenzMax,
-    }
-}
+        differenzMax
+    };
+};

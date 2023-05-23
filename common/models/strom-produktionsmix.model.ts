@@ -1,3 +1,6 @@
+import { BaseModel } from './base/base.model';
+import { DateModel } from './base/date.model';
+
 export interface StromProduktionsMixSource {
     Datum: string;
     Kumuliert_Kernkraft_TWh: string;
@@ -15,9 +18,7 @@ export interface StromProduktionsMixSource {
     Anteil_Kumuliert_Photovoltaik_prozent: string;
 }
 
-export interface StromProduktionsMix {
-    id: string;
-    datum: string;
+export interface StromProduktionsMix extends BaseModel, DateModel {
     kumuliertEigenproduktion: number;
     kumuliertKernkraft: number;
     kumuliertThermische: number;
@@ -33,13 +34,15 @@ export interface StromProduktionsMix {
     anteilPhotovoltaik: number;
 }
 
-export const map = (records: StromProduktionsMixSource[]): StromProduktionsMix[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: StromProduktionsMixSource[]
+): StromProduktionsMix[] => {
+    return records.map((record) => mapRecord(record));
+};
 
 const mapRecord = (record: StromProduktionsMixSource): StromProduktionsMix => ({
     id: createId(record),
-    datum: record.Datum,
+    date: record.Datum,
     kumuliertEigenproduktion: parseFloat(record.Kumuliert_Eigenproduktion_TWh),
     kumuliertKernkraft: parseFloat(record.Kumuliert_Kernkraft_TWh),
     kumuliertThermische: parseFloat(record.Kumuliert_Thermische_TWh),
@@ -50,13 +53,14 @@ const mapRecord = (record: StromProduktionsMixSource): StromProduktionsMix => ({
     anteilKernkraft: parseFloat(record.Anteil_Kumuliert_Kernkraft_prozent),
     anteilThermische: parseFloat(record.Anteil_Kumuliert_Thermische_prozent),
     anteilFlusskraft: parseFloat(record.Anteil_Kumuliert_Flusskraft_prozent),
-    anteilSpeicherkraft: parseFloat(record.Anteil_Kumuliert_Speicherkraft_prozent),
+    anteilSpeicherkraft: parseFloat(
+        record.Anteil_Kumuliert_Speicherkraft_prozent
+    ),
     anteilWind: parseFloat(record.Anteil_Kumuliert_Wind_prozent),
-    anteilPhotovoltaik: parseFloat(record.Anteil_Kumuliert_Photovoltaik_prozent),
-})
+    anteilPhotovoltaik: parseFloat(record.Anteil_Kumuliert_Photovoltaik_prozent)
+});
 
 const createId = (record: StromProduktionsMixSource): string => {
     const year = new Date(record.Datum).getFullYear();
-
     return `strommix-${year}`;
-}
+};

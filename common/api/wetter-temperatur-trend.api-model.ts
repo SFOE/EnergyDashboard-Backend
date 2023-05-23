@@ -1,37 +1,40 @@
+import { DateModel } from '/opt/nodejs/models/base/date.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
-import { WetterTemperaturAktuell } from '/opt/nodejs/models/wetter-temperatur-aktuell.model';
-import { WetterTemperaturTrend } from '/opt/nodejs/models/wetter-temperatur-trend.model';
+import { WetterTemperaturAktuell } from '/opt/nodejs/models/wetter/wetter-temperatur-aktuell.model';
+import { WetterTemperaturTrendV2 } from '/opt/nodejs/models/wetter/wetter-temperatur-trend-v2.model';
 
 export interface WetterTemperaturTrendApi {
     trend: Trend;
     trendRating: TrendRating;
     values: {
         [station: string]: WetterTemperaturTrendEntryApi;
-    }
+    };
 }
 
-interface WetterTemperaturTrendEntryApi {
+interface WetterTemperaturTrendEntryApi extends DateModel {
     lufttemperaturTagesmittel: number;
-    datum: string;
 }
 
-export const mapToApiModel = (temperaturTrend: WetterTemperaturTrend, records: WetterTemperaturAktuell[]): WetterTemperaturTrendApi => {
+export const mapToApiModel = (
+    temperaturTrend: WetterTemperaturTrendV2,
+    records: WetterTemperaturAktuell[]
+): WetterTemperaturTrendApi => {
     const response = {
         trend: temperaturTrend.trend,
         trendRating: temperaturTrend.trendRating,
-        values: {},
+        values: {}
     };
-    records.forEach(record => {
+    records.forEach((record) => {
         response.values[record.station] = mapToApi(record);
-    })
+    });
 
     return response;
 };
 
 const mapToApi = ({
-    datum,
-    lufttemperaturTagesmittel,
+    date,
+    lufttemperaturTagesmittel
 }: WetterTemperaturAktuell): WetterTemperaturTrendEntryApi => ({
-    datum,
-    lufttemperaturTagesmittel,
+    date,
+    lufttemperaturTagesmittel
 });

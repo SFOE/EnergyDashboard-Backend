@@ -1,0 +1,8 @@
+services:
+  service-energy-dashboard-backend-api:
+    path: functions/api
+    config: serverless-api.yml
+
+  service-energy-dashboard-backend-data-processing:
+    path: functions/data-processing
+    config: serverless-data-processing.yml

@@ -1,3 +1,4 @@
+import { roundOneDecimal } from '/opt/nodejs/utils/number.utils';
 import { createResponse } from '/opt/nodejs/api/api-requests';
 import { DashboardEntryApi } from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
 import { DashboardGasApi } from '/opt/nodejs/api/dashboard/dashboard-gas.api-model';
@@ -17,10 +18,22 @@ export const handler = async (event): Promise<any> => {
 };
 
 const getDataForGasDashboard = async (): Promise<DashboardGasApi> => {
-    const aktuellerVerbrauch = await getAktuellerVerbrauch();
-    const fuellstandNachbarlaender = await getFuellstandNachbarlaender();
-    const nettoImport = await getNettoImport();
-    const aktuelleGesamteinsparung = await getAktuelleGesamteinsparung();
+    const promiseAktuellerVerbrauch = getAktuellerVerbrauch();
+    const promiseFuellstandNachbarlaender = getFuellstandNachbarlaender();
+    const promiseNettoImport = getNettoImport();
+    const promiseAktuelleGesamteinsparung = getAktuelleGesamteinsparung();
+
+    const [
+        aktuellerVerbrauch,
+        fuellstandNachbarlaender,
+        nettoImport,
+        aktuelleGesamteinsparung
+    ] = await Promise.all([
+        promiseAktuellerVerbrauch,
+        promiseFuellstandNachbarlaender,
+        promiseNettoImport,
+        promiseAktuelleGesamteinsparung
+    ]);
 
     return {
         aktuellerVerbrauch,
@@ -89,7 +102,7 @@ const getNettoImport = async (): Promise<DashboardEntryApi> => {
         value: currentValue.nettoImportCH,
         trend: currentValue.trend,
         trendRating: currentValue.trendRating,
-        date: currentValue.datum
+        date: currentValue.date
     };
 };
 
@@ -107,9 +120,10 @@ const getAktuelleGesamteinsparung = async (): Promise<DashboardEntryApi> => {
     }
 
     return {
-        value:
+        value: roundOneDecimal(
             currentValue.standSparzielProzent +
-            currentValue.standSparzielGeschaetztProzent,
+            currentValue.standSparzielGeschaetztProzent
+        ),
         trend: currentValue.trend,
         trendRating: currentValue.trendRating,
         date: currentValue.date

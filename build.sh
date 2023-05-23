@@ -6,3 +6,6 @@ mv dist/node_modules dist/node-modules-layer/nodejs/
 # common layer
 mkdir -p dist/common-layer/nodejs
 mv dist/common/* dist/common-layer/nodejs/
+# Copy to deployment folders
+cp -r dist functions/data-processing/dist
+cp -r dist functions/api/dist

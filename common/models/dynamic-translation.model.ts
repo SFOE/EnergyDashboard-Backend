@@ -1,5 +1,8 @@
+import { BaseModel } from '/opt/nodejs/models/base/base.model';
+import { getUuid } from '/opt/nodejs/utils/id.utils';
+
 export interface DynamicTranslationSource {
-    [key: string]: Translation
+    [key: string]: Translation;
 }
 
 export interface Translation {
@@ -9,14 +12,15 @@ export interface Translation {
     en: string;
 }
 
-export interface DynamicTranslation extends Translation {
-    key: string
+export interface DynamicTranslation extends Translation, BaseModel {
+    key: string;
 }
 
 export const map = (translations: DynamicTranslationSource): DynamicTranslation[] => {
     return Object.keys(translations)
         .map(key => ({
+            id: getUuid(),
             key,
-            ...translations[key],
-        }))
-}
+            ...translations[key]
+        }));
+};

@@ -1,21 +1,20 @@
-import { StromVerbrauchLandesverbrauch } from '/opt/nodejs/models/strom-verbrauch-landesverbrauch.model';
+import { DateModel } from '../models/base/date.model';
+import { FiveYearWithDiffStatisticsModel } from '../models/base/statistics.model';
 import { mapDateWithMonth } from '../utils/date.utils';
+import { StromVerbrauchLandesverbrauch } from '/opt/nodejs/models/strom-verbrauch-landesverbrauch.model';
 
-export interface StromVerbrauchLandesverbrauchApi {
+export interface StromVerbrauchLandesverbrauchApi
+    extends DateModel,
+        FiveYearWithDiffStatisticsModel {
     landesverbrauchSG: number | null;
     landesverbrauchBFE: number | null;
     landesverbrauchENTSOE: number | null;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
-    date: string;
-    differenzMittelwert: number | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
 }
 
-export const mapToApiModel = (records: StromVerbrauchLandesverbrauch[]): StromVerbrauchLandesverbrauchApi[] => {
-    return records.map(record => mapToApi(record));
+export const mapToApiModel = (
+    records: StromVerbrauchLandesverbrauch[]
+): StromVerbrauchLandesverbrauchApi[] => {
+    return records.map((record) => mapToApi(record));
 };
 
 const mapToApi = ({
@@ -28,7 +27,7 @@ const mapToApi = ({
     fiveYearMittelwert,
     differenzMittelwert,
     differenzMin,
-    differenzMax,
+    differenzMax
 }: StromVerbrauchLandesverbrauch): StromVerbrauchLandesverbrauchApi => {
     return {
         landesverbrauchSG,
@@ -40,6 +39,6 @@ const mapToApi = ({
         date: mapDateWithMonth(monat),
         differenzMittelwert,
         differenzMin,
-        differenzMax,
-    }
-}
+        differenzMax
+    };
+};

@@ -1,13 +1,13 @@
 import { createResponse } from '/opt/nodejs/api/api-requests';
 import { DashboardEntryWithoutTrendApi } from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
 import { DashboardPreiseApi } from '/opt/nodejs/api/dashboard/dashboard-preise.api-model';
-import { fetchCurrentPreiseGasBoerse } from '/opt/nodejs/db/preise/preise-gas-boerse.db';
 import { fetchCurrentPreiseHeizoelEntwicklung } from '/opt/nodejs/db/preise/preise-heizoel-entwicklung.db';
 import { fetchCurrentPreiseStromBoerse } from '/opt/nodejs/db/preise/preise-strom-boerse.db';
 import { fetchCurrentPreiseTreibstoffBleifrei } from '/opt/nodejs/db/preise/preise-treibstoff-bleifrei.db';
 import { fetchCurrentPreiseTreibstoffDiesel } from '/opt/nodejs/db/preise/preise-treibstoff-diesel.db';
 import { PreiseStromBoerse } from '/opt/nodejs/models/preise/preise-strom-boerse.model';
 import { PreiseIndexiertType } from '/opt/nodejs/models/preise/preise.common.model';
+import { fetchCurrentPreiseGasDayahead } from '/opt/nodejs/db/preise/preise-gas-dayahead.db';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -19,11 +19,25 @@ export const handler = async (event): Promise<any> => {
 };
 
 const getDataForPreiseDashboard = async (): Promise<DashboardPreiseApi> => {
-    const stromBoerse = await fetchCurrentPreiseStromBoerse();
-    const gasBoerse = await fetchCurrentPreiseGasBoerse();
-    const heizoelEntwicklung = await fetchCurrentPreiseHeizoelEntwicklung();
-    const treibstoffBenzin = await fetchCurrentPreiseTreibstoffBleifrei();
-    const treibstoffDiesel = await fetchCurrentPreiseTreibstoffDiesel();
+    const promiseStromBoerse = fetchCurrentPreiseStromBoerse();
+    const promiseGasBoerse = fetchCurrentPreiseGasDayahead();
+    const promiseHeizoelEntwicklung = fetchCurrentPreiseHeizoelEntwicklung();
+    const promiseTreibstoffBenzin = fetchCurrentPreiseTreibstoffBleifrei();
+    const promiseTreibstoffDiesel = fetchCurrentPreiseTreibstoffDiesel();
+
+    const [
+        stromBoerse,
+        gasBoerse,
+        heizoelEntwicklung,
+        treibstoffBenzin,
+        treibstoffDiesel
+    ] = await Promise.all([
+        promiseStromBoerse,
+        promiseGasBoerse,
+        promiseHeizoelEntwicklung,
+        promiseTreibstoffBenzin,
+        promiseTreibstoffDiesel
+    ]);
 
     return {
         stromBoerse: mapStromBoerse(stromBoerse),

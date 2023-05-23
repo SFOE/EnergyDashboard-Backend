@@ -1,9 +1,9 @@
 import { Context, S3Event } from 'aws-lambda';
-import { saveAllPreiseGasEndverbrauch } from '/opt/nodejs/db/preise/preise-gas-endverbrauch.db';
 import {
-    map,
-    PreiseGasEndverbrauchSource
-} from '/opt/nodejs/models/preise/preise-gas-endverbrauch.model';
+    deleteAllPreiseGasEndverbrauch,
+    saveAllPreiseGasEndverbrauch
+} from '/opt/nodejs/db/preise/preise-gas-endverbrauch.db';
+import { map, PreiseGasEndverbrauchSource } from '/opt/nodejs/models/preise/preise-gas-endverbrauch.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 
@@ -22,5 +22,7 @@ const processPreiseGasEndverbrauch = async () => {
         SourceFiles.PREISE_GAS_ENDVERBRAUCH
     );
     const data = map(records);
+
+    await deleteAllPreiseGasEndverbrauch();
     await saveAllPreiseGasEndverbrauch(data);
 };

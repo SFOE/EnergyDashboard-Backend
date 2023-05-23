@@ -1,13 +1,17 @@
-import { StromImportExportCountries, StromImportExportNetto } from '/opt/nodejs/models/strom-import-export-netto.model';
+import { DateModel } from '../models/base/date.model';
+import { dateSortFn } from '../utils/sort.utils';
+import {
+    StromImportExportCountries,
+    StromImportExportNetto
+} from '/opt/nodejs/models/strom-import-export-netto.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
 
 export interface StromImportExportNettoApi {
-    currentEntry: StromImportExportNettoCurrentEntryApi,
-    entries: StromImportExportNettoEntryApi[]
+    currentEntry: StromImportExportNettoCurrentEntryApi;
+    entries: StromImportExportNettoEntryApi[];
 }
 
-export interface StromImportExportNettoCurrentEntryApi {
-    datum: Date;
+export interface StromImportExportNettoCurrentEntryApi extends DateModel {
     import: StromImportExportCountries;
     export: StromImportExportCountries;
     nettoImportCH: number;
@@ -15,21 +19,24 @@ export interface StromImportExportNettoCurrentEntryApi {
     trendRating: TrendRating;
 }
 
-export interface StromImportExportNettoEntryApi {
-    datum: Date;
+export interface StromImportExportNettoEntryApi extends DateModel {
     import: StromImportExportCountries;
     export: StromImportExportCountries;
 }
 
-export const mapToApiModel = (records: StromImportExportNetto[]): StromImportExportNettoApi => {
-    const sortedRecords = records.sort(sortFn);
+export const mapToApiModel = (
+    records: StromImportExportNetto[]
+): StromImportExportNettoApi => {
+    const sortedRecords = records.sort(dateSortFn);
     return {
         currentEntry: mapCurrentEntry(sortedRecords),
-        entries: mapEntries(sortedRecords),
-    }
-}
+        entries: mapEntries(sortedRecords)
+    };
+};
 
-const mapCurrentEntry = (records: StromImportExportNetto[]): StromImportExportNettoCurrentEntryApi => {
+const mapCurrentEntry = (
+    records: StromImportExportNetto[]
+): StromImportExportNettoCurrentEntryApi => {
     const currentEntry = records[records.length - 1];
 
     return {
@@ -38,23 +45,24 @@ const mapCurrentEntry = (records: StromImportExportNetto[]): StromImportExportNe
         export: currentEntry.export,
         import: currentEntry.import,
         nettoImportCH: currentEntry.nettoImportCH,
-        datum: new Date(currentEntry.datum),
-    }
-}
+        date: currentEntry.date
+    };
+};
 
-const mapEntries = (records: StromImportExportNetto[]): StromImportExportNettoEntryApi[] => {
-    return records
-        .map((record) => mapToApi(record))
-}
+const mapEntries = (
+    records: StromImportExportNetto[]
+): StromImportExportNettoEntryApi[] => {
+    return records.map((record) => mapToApi(record));
+};
 
-const sortFn = (a: StromImportExportNetto, b: StromImportExportNetto) => new Date(a.datum).getTime() - new Date(b.datum).getTime();
-
-const mapToApi = (record: StromImportExportNetto): StromImportExportNettoEntryApi => ({
-    datum: new Date(record.datum),
+const mapToApi = (
+    record: StromImportExportNetto
+): StromImportExportNettoEntryApi => ({
+    date: record.date,
     import: {
-        ...record.import,
+        ...record.import
     },
     export: {
-        ...record.export,
-    },
-})
+        ...record.export
+    }
+});

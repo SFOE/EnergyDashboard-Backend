@@ -7,6 +7,12 @@ export interface DashboardEntryApi {
     date: string;
 }
 
+export interface DashboardEntryWithoutDateApi {
+    value: number;
+    trend: Trend;
+    trendRating: TrendRating;
+}
+
 export interface DashboardEntryWithoutTrendApi {
     value: number;
     date: string;

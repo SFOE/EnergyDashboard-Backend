@@ -1,4 +1,4 @@
-import { fetchAll, saveAll } from '/opt/nodejs/db/db-requests';
+import { deleteAll, fetchAll, saveAll } from '/opt/nodejs/db/db-requests';
 import { DynamoDBTables } from '/opt/nodejs/db/db-tables';
 import { PreiseGasEndverbrauch } from '/opt/nodejs/models/preise/preise-gas-endverbrauch.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
@@ -18,4 +18,8 @@ export const saveAllPreiseGasEndverbrauch = async (
     data: PreiseGasEndverbrauch[]
 ) => {
     await saveAll(tableName, data);
+};
+
+export const deleteAllPreiseGasEndverbrauch = async () => {
+    await deleteAll(tableName);
 };

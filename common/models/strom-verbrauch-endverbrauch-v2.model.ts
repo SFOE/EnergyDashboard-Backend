@@ -1,3 +1,4 @@
+import { FiveYearWithDiffStatisticsModel } from './base/statistics.model';
 import { BaseModel } from '/opt/nodejs/models/base/base.model';
 import { DateModel } from '/opt/nodejs/models/base/date.model';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
@@ -16,41 +17,41 @@ export interface StromVerbrauchEndverbrauchSourceV2 {
     Prognose_Max_GWh: string;
 }
 
-export interface StromVerbrauchEndverbrauchV2 extends BaseModel, DateModel {
-    id: string;
-    date: string;
+export interface StromVerbrauchEndverbrauchV2
+    extends BaseModel,
+        DateModel,
+        FiveYearWithDiffStatisticsModel {
     endverbrauch: number | null;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
-    differenzMittelwert: number | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
     prognoseMittelwert: number | null;
     prognoseMin: number | null;
     prognoseMax: number | null;
 }
 
-export const map = (records: StromVerbrauchEndverbrauchSourceV2[]): StromVerbrauchEndverbrauchV2[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: StromVerbrauchEndverbrauchSourceV2[]
+): StromVerbrauchEndverbrauchV2[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-const mapRecord = (record: StromVerbrauchEndverbrauchSourceV2): StromVerbrauchEndverbrauchV2 => ({
+const mapRecord = (
+    record: StromVerbrauchEndverbrauchSourceV2
+): StromVerbrauchEndverbrauchV2 => ({
     id: createId(record.Datum),
     date: record.Datum,
     endverbrauch: parseFloatOrNullForNA(record.endverbrauch_GWh_SG),
     fiveYearMin: parseFloat(record.SG_5y_Min),
     fiveYearMax: parseFloat(record.SG_5y_Max),
     fiveYearMittelwert: parseFloat(record.SG_5y_Mittelwert),
-    differenzMittelwert: parseFloatOrNullForNA(record.Differenz_Mittelwert_prozent),
+    differenzMittelwert: parseFloatOrNullForNA(
+        record.Differenz_Mittelwert_prozent
+    ),
     differenzMin: parseFloatOrNullForNA(record.Differenz_min_prozent),
     differenzMax: parseFloatOrNullForNA(record.Differenz_max_prozent),
     prognoseMittelwert: parseFloatOrNullForNA(record.Prognose_Mittel_GWh),
     prognoseMin: parseFloatOrNullForNA(record.Prognose_Min_GWh),
-    prognoseMax: parseFloatOrNullForNA(record.Prognose_Max_GWh),
-})
-
+    prognoseMax: parseFloatOrNullForNA(record.Prognose_Max_GWh)
+});
 
 export const createId = (date: string) => {
     return `endverbrauch-v2-${date}`;
-}
+};

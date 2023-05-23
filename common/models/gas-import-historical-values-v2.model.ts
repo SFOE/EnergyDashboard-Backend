@@ -1,3 +1,5 @@
+import { FiveYearWithDiffStatisticsModel } from './base/statistics.model';
+import { TrendModel } from './base/trend.model';
 import { BaseModel } from '/opt/nodejs/models/base/base.model';
 import { DateModel } from '/opt/nodejs/models/base/date.model';
 import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
@@ -16,25 +18,23 @@ export interface GasImportHistoricalValueSourceV2 {
     TrendRating: string;
 }
 
-export interface GasImportHistoricalValueV2 extends BaseModel, DateModel {
-    id: string;
-    date: string;
+export interface GasImportHistoricalValueV2
+    extends BaseModel,
+        DateModel,
+        TrendModel,
+        FiveYearWithDiffStatisticsModel {
     nettoimport: number | null;
-    fiveYearMin: number;
-    fiveYearMax: number;
-    fiveYearMittelwert: number;
-    differenzMittelwert: number | null;
-    differenzMin: number | null;
-    differenzMax: number | null;
-    trend: Trend | null;
-    trendRating: TrendRating | null;
 }
 
-export const map = (records: GasImportHistoricalValueSourceV2[]): GasImportHistoricalValueV2[] => {
-    return records.map(record => mapRecord(record));
-}
+export const map = (
+    records: GasImportHistoricalValueSourceV2[]
+): GasImportHistoricalValueV2[] => {
+    return records.map((record) => mapRecord(record));
+};
 
-const mapRecord = (record: GasImportHistoricalValueSourceV2): GasImportHistoricalValueV2 => ({
+const mapRecord = (
+    record: GasImportHistoricalValueSourceV2
+): GasImportHistoricalValueV2 => ({
     id: createId(record.Datum),
     date: record.Datum,
     nettoimport: parseFloatOrNullForNA(record.Importierte_Energie_GWh),
@@ -45,9 +45,9 @@ const mapRecord = (record: GasImportHistoricalValueSourceV2): GasImportHistorica
     differenzMin: parseFloatOrNullForNA(record.Differenz_Min),
     differenzMax: parseFloatOrNullForNA(record.Differenz_Max),
     trend: Trend[record.Trend],
-    trendRating: TrendRating[record.TrendRating],
-})
+    trendRating: TrendRating[record.TrendRating]
+});
 
 export const createId = (date: string) => {
     return `gas-import-v2-${date}`;
-}
+};
