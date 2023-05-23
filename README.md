@@ -18,14 +18,6 @@ In order to add new lambda functions we need to do the following tasks:
 
 - Create new folder under api or data-processing, depending upon the functionality
 - The folder has to contain a `???.ts` file with a `handler` function
-  <<<<<<< HEAD
-- Add the configuration of the lambda function to serverless.yml
-- In case it's a data-processing lambda function it's most likely needed that the new function with the associated file
-  is added to the `source-files.ts`, so that the lambda function which gets triggered by AWS can properly route the file
-  to the new function.
-- If you need a new db table for the data make sure to add the entry to `db-tables.ts`. Currently you need to manually
-  add the new DynamoDB table in the AWS console, once for dev and once for prod
-  =======
 - Add the configuration of the lambda function to `serverless-data-processing.yml` and / or `serverless-api.yml`
 - In case it's a data-processing lambda function it's most likely needed that the new function with the associated file
   is added to the `source-files.ts`, so that the lambda function which gets triggered by AWS can properly route the file
@@ -33,7 +25,6 @@ In order to add new lambda functions we need to do the following tasks:
 - If you need a new db table for the data make sure to add the entry to `db-tables.ts`. Also make sure to add the
   database in `serverless-data-processing.yml`
 
-> > > > > > > production
 
 ## Versioning of source files and APIs
 
@@ -61,13 +52,8 @@ following shared modules (also called layers in AWS Lambda):
 - Common Layer
 - Node Modules Layer
 
-<<<<<<< HEAD
-Those modules are built separately and referenced in the serverless configuration. Beware to not put too many node
-modules in these layers, AWS has a relatively low size of allowed files per function.
-=======
 Those modules are built separately and referenced in the serverless configuration. Beware not to put too many node
 modules in these layers, AWS has a relatively low size of allowed files per function.
-> > > > > > > production
 
 ### Serverless
 
