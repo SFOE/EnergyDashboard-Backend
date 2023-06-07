@@ -4,11 +4,11 @@ import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import {
     deleteAllStromSparzielZielAktuellerMonatKundengruppe,
     saveStromSparzielZielAktuellerMonatKundengruppe
-} from '/opt/nodejs/db/strom-sparziel-ziel-aktueller-monat-kundengruppe.db';
+} from '/opt/nodejs/db/strom/strom-sparziel-ziel-aktueller-monat-kundengruppe.db';
 import {
     map,
     StromSparzielZielAktuellerMonatKundengruppeSource
-} from '/opt/nodejs/models/strom-sparziel-ziel-aktueller-monat-kundengruppe.model';
+} from '/opt/nodejs/models/strom/strom-sparziel-ziel-aktueller-monat-kundengruppe.model';
 
 export const handler = async (
     event: S3Event,

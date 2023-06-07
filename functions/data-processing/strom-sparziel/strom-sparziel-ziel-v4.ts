@@ -1,8 +1,8 @@
 import { Context, S3Event } from 'aws-lambda';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
-import { map, SparzielZielSourceV4 } from '/opt/nodejs/models/sparziel-ziel-v4.model';
-import { deleteAllStromSparzielZielV4, saveStromSparzielZielV4 } from '/opt/nodejs/db/strom-sparziel-ziel-v4.db';
+import { map, SparzielZielSourceV4 } from '/opt/nodejs/models/sparziel/sparziel-ziel-v4.model';
+import { deleteAllStromSparzielZielV4, saveStromSparzielZielV4 } from '/opt/nodejs/db/strom/strom-sparziel-ziel-v4.db';
 
 export const handler = async (
     event: S3Event,

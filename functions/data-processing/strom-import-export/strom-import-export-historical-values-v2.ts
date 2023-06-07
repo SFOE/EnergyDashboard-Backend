@@ -1,11 +1,11 @@
 import {
     deleteAllStromImportExportHistoricalValuesV2,
-    saveAllStromImportExportHistoricalValuesV2,
-} from '/opt/nodejs/db/strom-import-export-historical-values-v2.db';
+    saveAllStromImportExportHistoricalValuesV2
+} from '/opt/nodejs/db/strom/strom-import-export-historical-values-v2.db';
 import {
     map,
-    StromImportExportHistoricalValueSourceV2,
-} from '/opt/nodejs/models/strom-import-export-historical-values-v2.model';
+    StromImportExportHistoricalValueSourceV2
+} from '/opt/nodejs/models/strom/strom-import-export-historical-values-v2.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { Context, S3Event } from 'aws-lambda';

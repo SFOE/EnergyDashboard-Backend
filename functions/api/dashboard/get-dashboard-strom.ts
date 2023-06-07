@@ -3,16 +3,19 @@ import { DashboardEntryApi } from '/opt/nodejs/api/dashboard/dashboard-entry.api
 import { DashboardStromApi } from '/opt/nodejs/api/dashboard/dashboard-strom.api-model';
 import {
     findMostRecentStromFuellungsgradSpeicherseenV2ForRegion
-} from '/opt/nodejs/db/strom-fuellungsgrad-speicherseen-v2.db';
-import { findMostRecentStromImportExportUebersicht } from '/opt/nodejs/db/strom-import-export-uebersicht.db';
-import { fetchMostRecentStromProduktionImportVerbrauch } from '/opt/nodejs/db/strom-produktion-import-verbrauch.db';
-import { fetchStromSparzielZiel } from '/opt/nodejs/db/strom-sparziel-ziel.db';
+} from '/opt/nodejs/db/strom/strom-fuellungsgrad-speicherseen-v2.db';
+import { findMostRecentStromImportExportUebersicht } from '/opt/nodejs/db/strom/strom-import-export-uebersicht.db';
 import {
-    findStromVerbrauchLandesverbrauchMitPrognoseV2ByDate
-} from '/opt/nodejs/db/strom-verbrauch-landesverbrauch-mit-prognose-v2.db';
-import { Region } from '/opt/nodejs/models/fuellungsgrad-speicherseen.model';
-import { getYesterdaysDateAsIsoString } from '/opt/nodejs/utils/date.utils';
+    fetchMostRecentStromProduktionImportVerbrauch
+} from '/opt/nodejs/db/strom/strom-produktion-import-verbrauch.db';
+import {
+    fetchMostRecentStromVerbrauchLandesverbrauchMitPrognoseV2
+} from '/opt/nodejs/db/strom/strom-verbrauch-landesverbrauch-mit-prognose-v2.db';
 import { roundOneDecimal } from '/opt/nodejs/utils/number.utils';
+import {
+    StromFuellungsgradSpeicherseenRegionV2
+} from '/opt/nodejs/models/strom/strom-fuellungsgrad-speicherseen-v2.model';
+import { fetchStromSparzielZielV4 } from '/opt/nodejs/db/strom/strom-sparziel-ziel-v4.db';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -55,11 +58,9 @@ const getDataForStromDashboard = async (): Promise<DashboardStromApi> => {
 };
 
 const getAktuellerVerbrauch = async (): Promise<DashboardEntryApi> => {
-    const yesterday = getYesterdaysDateAsIsoString();
-    console.log(`getAktuellerVerbrauch,  day: ${yesterday}`);
-
+    console.log('getAktuellerVerbrauch');
     const currentValue =
-        await findStromVerbrauchLandesverbrauchMitPrognoseV2ByDate(yesterday);
+        await fetchMostRecentStromVerbrauchLandesverbrauchMitPrognoseV2();
     console.log(
         `getAktuellerVerbrauch, currentValue: ${JSON.stringify(currentValue)}`
     );
@@ -98,7 +99,7 @@ const getSpeicherfuellstand = async (): Promise<DashboardEntryApi> => {
 
     const currentValue =
         await findMostRecentStromFuellungsgradSpeicherseenV2ForRegion(
-            Region.TotalCH
+            StromFuellungsgradSpeicherseenRegionV2.TotalCH
         );
     console.log(
         `getSpeicherfuellstand, currentValue: ${JSON.stringify(currentValue)}`
@@ -148,7 +149,7 @@ const getNettoImportAndExport = async (): Promise<{
 };
 
 const getAktuelleGesamteinsparung = async (): Promise<DashboardEntryApi> => {
-    const currentValue = await fetchStromSparzielZiel();
+    const currentValue = await fetchStromSparzielZielV4();
 
     console.log(
         `getAktuelleGesamteinsparung, currentValue: ${JSON.stringify(

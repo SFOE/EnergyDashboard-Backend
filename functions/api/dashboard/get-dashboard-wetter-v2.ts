@@ -6,9 +6,9 @@ import {
 } from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
 import { DashboardWetterApiV2 } from '/opt/nodejs/api/dashboard/dashboard-wetter.api-model-v2';
 import { fetchMostRecentWetterTemperaturAktuellSchweiz } from '/opt/nodejs/db/wetter/wetter-temperatur-aktuell.db';
-import { fetchWetterTemperaturTrend } from '/opt/nodejs/db/wetter/wetter-temperatur-trend-v2.db';
-import { fetchMostRecentWetterNiederschlag } from '/opt/nodejs/db/wetter/wetter-niederschlag.db';
+import { fetchWetterTemperaturTrendV2 } from '/opt/nodejs/db/wetter/wetter-temperatur-trend-v2.db';
 import { fetchMostRecentWetterSchneereserven } from '/opt/nodejs/db/wetter/wetter-schneereserven.db';
+import { fetchMostRecentWetterNiederschlagV2 } from '/opt/nodejs/db/wetter/wetter-niederschlag-v2.db';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -68,7 +68,7 @@ const getAktuelleTemperatur =
 const getPrognoseTemperatur = async (): Promise<DashboardEntryWithoutDateApi> => {
     console.log(`getPrognoseTemperatur`);
 
-    const trend = await fetchWetterTemperaturTrend();
+    const trend = await fetchWetterTemperaturTrendV2();
     console.log(`getPrognoseTemperatur, prognoseTemperatur: ${JSON.stringify(trend)}`);
 
     if (!trend) {
@@ -85,7 +85,7 @@ const getPrognoseTemperatur = async (): Promise<DashboardEntryWithoutDateApi> =>
 const getNiederschlaege = async (): Promise<DashboardEntryApi> => {
     console.log(`getNiederschlag`);
 
-    const niederschlaege = await fetchMostRecentWetterNiederschlag();
+    const niederschlaege = await fetchMostRecentWetterNiederschlagV2();
 
     console.log(`getNiederschlag, niederschlaege: ${JSON.stringify(niederschlaege)}`);
 
@@ -96,7 +96,7 @@ const getNiederschlaege = async (): Promise<DashboardEntryApi> => {
     return {
         trend: niederschlaege.trend,
         trendRating: niederschlaege.trendRating,
-        value: niederschlaege.differenzZuNormProzent,
+        value: niederschlaege.niederschlagGemessen,
         date: niederschlaege.date
     };
 };

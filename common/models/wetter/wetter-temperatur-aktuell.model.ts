@@ -1,6 +1,7 @@
 import { BaseModel } from '../base/base.model';
 import { DateModel } from '/opt/nodejs/models/base/date.model';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
+import { getUuid } from '/opt/nodejs/utils/id.utils';
 
 export interface WetterTemperaturAktuellSource {
     Station: string;
@@ -35,7 +36,7 @@ const mapEntry = (
     source: WetterTemperaturAktuellSource
 ): WetterTemperaturAktuell => {
     return {
-        id: createId(source.Station, source.Datum),
+        id: getUuid(),
         station: source.Station,
         date: source.Datum,
         lufttemperaturTagesmittel: parseFloatOrNullForNA(
@@ -50,8 +51,4 @@ const mapEntry = (
         differenzMin: parseFloatOrNullForNA(source.Differenz_min),
         differenzMax: parseFloatOrNullForNA(source.Differenz_max)
     };
-};
-
-export const createId = (station: string, date: string) => {
-    return `${station}-${date}`;
 };

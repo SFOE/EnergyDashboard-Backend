@@ -1,5 +1,5 @@
-import { SourceFiles } from '../../source-files';
-import { withEnvPrefix } from '../../utils/env.utils';
+import { SourceFiles } from '/opt/nodejs/source-files';
+import { withEnvPrefix } from '/opt/nodejs/utils/env.utils';
 import { deleteAll, fetchAll, saveAll } from '/opt/nodejs/db/db-requests';
 import { DynamoDBTables } from '/opt/nodejs/db/db-tables';
 import { WetterTemperaturAktuell } from '/opt/nodejs/models/wetter/wetter-temperatur-aktuell.model';

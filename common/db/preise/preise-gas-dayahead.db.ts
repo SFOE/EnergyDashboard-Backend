@@ -1,4 +1,4 @@
-import { PreiseGasDayahead } from '../../models/preise/preise-gas-dayahead.model';
+import { PreiseGasDayahead } from '/opt/nodejs/models/preise/preise-gas-dayahead.model';
 import { deleteAll, fetchAll, saveAll } from '/opt/nodejs/db/db-requests';
 import { DynamoDBTables } from '/opt/nodejs/db/db-tables';
 import { SourceFiles } from '/opt/nodejs/source-files';

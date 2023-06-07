@@ -1,8 +1,8 @@
 import {
     deleteAllFuellstandGasspeicherV2,
-    saveAllFuellstandGasspeicherV2,
-} from '/opt/nodejs/db/fuellstand-gasspeicher-v2.db';
-import { FuellstandGasspeicherSourceV2, map } from '/opt/nodejs/models/gas-fuellstand-gasspeicher-v2.model';
+    saveAllFuellstandGasspeicherV2
+} from '/opt/nodejs/db/gas/gas-fuellstand-gasspeicher-v2.db';
+import { FuellstandGasspeicherSourceV2, map } from '/opt/nodejs/models/gas/gas-fuellstand-gasspeicher-v2.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { Context, S3Event } from 'aws-lambda';

@@ -13,9 +13,7 @@ We use Typescript to develop all lambda functions and unit tests.
 For access to AWS Services such as AWS Lambda, DynamoDB, etc. we use the NodeJS aws-sdk.
 
 ## Adding new Lambda Functions
-
 In order to add new lambda functions we need to do the following tasks:
-
 - Create new folder under api or data-processing, depending upon the functionality
 - The folder has to contain a `???.ts` file with a `handler` function
 - Add the configuration of the lambda function to `serverless-data-processing.yml` and / or `serverless-api.yml`
@@ -25,11 +23,8 @@ In order to add new lambda functions we need to do the following tasks:
 - If you need a new db table for the data make sure to add the entry to `db-tables.ts`. Also make sure to add the
   database in `serverless-data-processing.yml`
 
-
 ## Versioning of source files and APIs
-
 If there are breaking changes in the source files or APIs we have the following versioning scheme:
-
 - BfE creates and pushes a new source file with a version appendix (*-v2.csv)
 - Create new lambda functions, DynamoDB tables and APIs based on the new file
 - Once everything is updated, remove the old versions of source files, lambda functions, DynamoDB tables and APIs
@@ -48,7 +43,6 @@ and the needed modules are in `build.sh`
 
 In order to reuse functionality across different functions we have shared modules that can be referenced. We have the
 following shared modules (also called layers in AWS Lambda):
-
 - Common Layer
 - Node Modules Layer
 

@@ -1,6 +1,6 @@
 import { createResponse } from '/opt/nodejs/api/api-requests';
-import { mapToApiModel } from '/opt/nodejs/api/gas-import-historical-values-v2.api-model';
-import { fetchAllGasImportHistoricalValuesV2 } from '/opt/nodejs/db/gas-import-historical-values-v2.db';
+import { mapToApiModel } from '/opt/nodejs/api/gas/gas-import-historical-values-v2.api-model';
+import { fetchAllGasImportHistoricalValuesV2 } from '/opt/nodejs/db/gas/gas-import-historical-values-v2.db';
 import { dateSortFn } from '/opt/nodejs/utils/sort.utils';
 
 export const handler = async (event): Promise<any> => {

@@ -1,8 +1,11 @@
 import {
     deleteAllStromVerbrauchEndverbrauchV2,
-    saveAllStromVerbrauchEndverbrauchV2,
-} from '/opt/nodejs/db/strom-verbrauch-endverbrauch-v2.db';
-import { map, StromVerbrauchEndverbrauchSourceV2 } from '/opt/nodejs/models/strom-verbrauch-endverbrauch-v2.model';
+    saveAllStromVerbrauchEndverbrauchV2
+} from '/opt/nodejs/db/strom/strom-verbrauch-endverbrauch-v2.db';
+import {
+    map,
+    StromVerbrauchEndverbrauchSourceV2
+} from '/opt/nodejs/models/strom/strom-verbrauch-endverbrauch-v2.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { Context, S3Event } from 'aws-lambda';

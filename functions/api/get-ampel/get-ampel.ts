@@ -1,7 +1,7 @@
-import { map } from '/opt/nodejs/api/ampel.api-model';
+import { map } from '/opt/nodejs/api/dashboard/ampel.api-model';
 import { createResponse } from '/opt/nodejs/api/api-requests';
-import { fetchAmpel } from '/opt/nodejs/db/ampel.db';
-import { AmpelEntry } from '/opt/nodejs/models/ampel.model';
+import { fetchAmpel } from '/opt/nodejs/db/dashboard/ampel.db';
+import { AmpelEntry } from '/opt/nodejs/models/dashboard/ampel.model';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);

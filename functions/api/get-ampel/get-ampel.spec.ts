@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { AmpelEntry } from '../../../common/models/ampel.model';
+import { AmpelEntry } from '../../../common/models/dashboard/ampel.model';
 import { findCurrentlyValidEntry } from './get-ampel';
 
 describe('findCurrentlyValidEntry', () => {

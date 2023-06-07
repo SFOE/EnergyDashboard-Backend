@@ -1,10 +1,10 @@
 import { createResponse } from '/opt/nodejs/api/api-requests';
-import { fetchAllStromSparziel5ProzentPeakH } from '/opt/nodejs/db/strom-sparziel-5-prozent-peak-h.db';
+import { fetchAllStromSparziel5ProzentPeakH } from '/opt/nodejs/db/strom/strom-sparziel-5-prozent-peak-h.db';
 import {
     mapToApiModel,
     StromSparziel5ProzentPeakDayApiModel,
     StromSparziel5ProzentPeakHApiModel
-} from '/opt/nodejs/api/strom-sparziel-5-prozent-peak-h.api-model';
+} from '/opt/nodejs/api/strom/strom-sparziel-5-prozent-peak-h.api-model';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);

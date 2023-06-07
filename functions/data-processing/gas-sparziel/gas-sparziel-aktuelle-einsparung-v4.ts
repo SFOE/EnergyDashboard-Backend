@@ -2,11 +2,11 @@ import { Context, S3Event } from 'aws-lambda';
 import {
     deleteAllGasSparzielAktuelleEinsparungV4,
     saveGasSparzielAktuelleEinsparungV4
-} from '/opt/nodejs/db/gas-sparziel-aktuelle-einsparung-v4.db';
+} from '/opt/nodejs/db/gas/gas-sparziel-aktuelle-einsparung-v4.db';
 import {
     map,
     SparzielAktuelleEinsparungSourceV4
-} from '/opt/nodejs/models/sparziel-aktuelle-einsparung-v4.model';
+} from '/opt/nodejs/models/sparziel/sparziel-aktuelle-einsparung-v4.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 

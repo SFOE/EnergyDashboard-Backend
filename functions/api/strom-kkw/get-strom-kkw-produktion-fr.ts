@@ -1,5 +1,5 @@
 import { createResponse } from '/opt/nodejs/api/api-requests';
-import { mapToApiModel } from '/opt/nodejs/api/strom-kkw-produktion.api-model';
+import { mapToApiModel } from '/opt/nodejs/api/strom/strom-kkw-produktion.api-model';
 import { fetchAllStromKkwAusfaelleFr } from '/opt/nodejs/db/strom/strom-kkw-ausfaelle.db';
 import { fetchAllStromKkwProduktionFr } from '/opt/nodejs/db/strom/strom-kkw-produktion.db';
 

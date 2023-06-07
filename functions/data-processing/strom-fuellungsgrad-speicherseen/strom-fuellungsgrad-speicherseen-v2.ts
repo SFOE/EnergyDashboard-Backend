@@ -1,11 +1,11 @@
 import {
     deleteAllStromFuellungsgradSpeicherseenV2,
-    saveAllStromFuellungsgradSpeicherseenV2,
-} from '/opt/nodejs/db/strom-fuellungsgrad-speicherseen-v2.db';
+    saveAllStromFuellungsgradSpeicherseenV2
+} from '/opt/nodejs/db/strom/strom-fuellungsgrad-speicherseen-v2.db';
 import {
     map,
-    StromFuellungsgradSpeicherseenSourceV2,
-} from '/opt/nodejs/models/strom-fuellungsgrad-speicherseen-v2.model';
+    StromFuellungsgradSpeicherseenSourceV2
+} from '/opt/nodejs/models/strom/strom-fuellungsgrad-speicherseen-v2.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { Context, S3Event } from 'aws-lambda';

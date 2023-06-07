@@ -1,5 +1,5 @@
-import { saveAmpel } from '/opt/nodejs/db/ampel.db';
-import { AmpelSource, map } from '/opt/nodejs/models/ampel.model';
+import { saveAmpel } from '/opt/nodejs/db/dashboard/ampel.db';
+import { AmpelSource, map } from '/opt/nodejs/models/dashboard/ampel.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getJSONFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { Context, S3Event } from 'aws-lambda';

@@ -1,9 +1,9 @@
 import { Context, S3Event } from 'aws-lambda';
-import { saveWetterTemperaturTrend } from '/opt/nodejs/db/wetter/wetter-temperatur-trend-v2.db';
 import {
-    map,
-    WetterTemperaturTrendSourceV2
-} from '/opt/nodejs/models/wetter/wetter-temperatur-trend-v2.model';
+    deleteAllWetterTemperaturTrendV2,
+    saveWetterTemperaturTrendV2
+} from '/opt/nodejs/db/wetter/wetter-temperatur-trend-v2.db';
+import { map, WetterTemperaturTrendSourceV2 } from '/opt/nodejs/models/wetter/wetter-temperatur-trend-v2.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 
@@ -27,7 +27,8 @@ const processWetterTemperaturTrend = async () => {
     const entries = map(sources[0]);
     console.log(`entries: ${JSON.stringify(entries)}`);
 
-    await saveWetterTemperaturTrend(entries);
+    await deleteAllWetterTemperaturTrendV2();
+    await saveWetterTemperaturTrendV2(entries);
 };
 
 const validateSources = (sources: WetterTemperaturTrendSourceV2[]) => {

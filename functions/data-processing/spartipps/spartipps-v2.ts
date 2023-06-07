@@ -1,6 +1,6 @@
 import { Context, S3Event } from 'aws-lambda';
-import { saveAllSpartippsV2 } from '/opt/nodejs/db/spartipps-v2.db';
-import { map, SpartippsSourceV2 } from '/opt/nodejs/models/spartipps-v2.model';
+import { deleteAllSpartippsV2, saveAllSpartippsV2 } from '/opt/nodejs/db/dashboard/spartipps-v2.db';
+import { map, SpartippsSourceV2 } from '/opt/nodejs/models/dashboard/spartipps-v2.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 
@@ -16,6 +16,7 @@ const processSpartipps = async () => {
     const spartipps = map(spartippsSources);
     console.log(`spartipps: ${JSON.stringify(spartipps)}`);
 
+    await deleteAllSpartippsV2();
     await saveAllSpartippsV2(spartipps);
 }
 

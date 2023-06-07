@@ -4,7 +4,7 @@ import { getUuid } from '/opt/nodejs/utils/id.utils';
 import { FiveYearStatisticsModel } from '/opt/nodejs/models/base/statistics.model';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
 import { TrendModel } from '/opt/nodejs/models/base/trend.model';
-import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
+import { Trend, TrendRating } from '/opt/nodejs/models/base/trend.enum';
 
 export interface WetterSchneereservenSource {
     Datum: string;

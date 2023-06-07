@@ -4,11 +4,11 @@ import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import {
     map,
     StromSparziel5ProzentEinsparungenSource
-} from '/opt/nodejs/models/strom-sparziel-5-prozent-einsparungen.model';
+} from '/opt/nodejs/models/strom/strom-sparziel-5-prozent-einsparungen.model';
 import {
     deleteAllStromSparziel5ProzentEinsparungen,
     saveStromSparziel5ProzentEinsparungen
-} from '/opt/nodejs/db/strom-sparziel-5-prozent-einsparungen.db';
+} from '/opt/nodejs/db/strom/strom-sparziel-5-prozent-einsparungen.db';
 
 export const handler = async (
     event: S3Event,

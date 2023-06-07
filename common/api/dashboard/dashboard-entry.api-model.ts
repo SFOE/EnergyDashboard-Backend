@@ -1,4 +1,4 @@
-import { Trend, TrendRating } from '/opt/nodejs/models/trend.enum';
+import { Trend, TrendRating } from '/opt/nodejs/models/base/trend.enum';
 
 export interface DashboardEntryApi {
     value: number;

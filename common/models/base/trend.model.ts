@@ -1,4 +1,4 @@
-import { Trend, TrendRating } from '../trend.enum';
+import { Trend, TrendRating } from './trend.enum';
 
 export interface TrendModel {
     trend: Trend;

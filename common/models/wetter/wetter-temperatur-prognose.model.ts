@@ -1,7 +1,7 @@
 import { BaseModel } from '../base/base.model';
 import { DateModel } from '/opt/nodejs/models/base/date.model';
 import { parseFloatOrNullForNA } from '/opt/nodejs/utils/number.utils';
-import { getNextIndexForKey } from '/opt/nodejs/utils/objects.utils';
+import { getUuid } from '/opt/nodejs/utils/id.utils';
 
 export interface WetterTemperaturPrognoseSource {
     Station: string;
@@ -29,16 +29,14 @@ export interface WetterTemperaturPrognose extends BaseModel, DateModel {
 export const map = (
     records: WetterTemperaturPrognoseSource[]
 ): WetterTemperaturPrognose[] => {
-    const stationIndices = {};
-    return records.map((record) => mapEntry(record, stationIndices));
+    return records.map((record) => mapEntry(record));
 };
 
 const mapEntry = (
     source: WetterTemperaturPrognoseSource,
-    stationIndices: object
 ): WetterTemperaturPrognose => {
     return {
-        id: createId(source.Station, stationIndices),
+        id: getUuid(),
         station: source.Station,
         date: source.Datum,
         lufttemperaturPrognose: parseFloatOrNullForNA(
@@ -53,8 +51,4 @@ const mapEntry = (
         differenzMin: parseFloatOrNullForNA(source.Differenz_min),
         differenzMax: parseFloatOrNullForNA(source.Differenz_max)
     };
-};
-
-export const createId = (station: string, stationIndices: object) => {
-    return `${station}-${getNextIndexForKey(station, stationIndices)}`;
 };

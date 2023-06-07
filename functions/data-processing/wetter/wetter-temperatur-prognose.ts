@@ -1,9 +1,9 @@
 import { Context, S3Event } from 'aws-lambda';
-import { saveAllWetterTemperaturPrognose } from '/opt/nodejs/db/wetter/wetter-temperatur-prognose.db';
 import {
-    map,
-    WetterTemperaturPrognoseSource
-} from '/opt/nodejs/models/wetter/wetter-temperatur-prognose.model';
+    deleteAllWetterTemperaturPrognose,
+    saveAllWetterTemperaturPrognose
+} from '/opt/nodejs/db/wetter/wetter-temperatur-prognose.db';
+import { map, WetterTemperaturPrognoseSource } from '/opt/nodejs/models/wetter/wetter-temperatur-prognose.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 
@@ -24,5 +24,9 @@ const processWetterTemperaturPrognose = async () => {
     const entries = map(sources);
     console.log(`entries: ${JSON.stringify(entries)}`);
 
+    console.log('Deleting all Wetter Temperatur Prognose');
+    await deleteAllWetterTemperaturPrognose();
+
+    console.log('Saving all Wetter Temperatur Prognose');
     await saveAllWetterTemperaturPrognose(entries);
 };

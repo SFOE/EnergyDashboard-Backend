@@ -1,8 +1,8 @@
 import { createResponse } from '/opt/nodejs/api/api-requests';
-import { mapToApiModel } from '/opt/nodejs/api/strom-verbrauch-landesverbrauch-vergleich-v2.api-model';
+import { mapToApiModel } from '/opt/nodejs/api/strom/strom-verbrauch-landesverbrauch-vergleich-v2.api-model';
 import {
-    fetchAllStromVerbrauchLandesverbrauchVergleichV2,
-} from '/opt/nodejs/db/strom-verbrauch-landesverbrauch-vergleich-v2.db';
+    fetchAllStromVerbrauchLandesverbrauchVergleichV2
+} from '/opt/nodejs/db/strom/strom-verbrauch-landesverbrauch-vergleich-v2.db';
 import { dateSortFn } from '/opt/nodejs/utils/sort.utils';
 
 export const handler = async (event): Promise<any> => {

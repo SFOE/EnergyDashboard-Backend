@@ -6,7 +6,7 @@ import {
 import { DashboardWetterApi } from '/opt/nodejs/api/dashboard/dashboard-wetter.api-model';
 import { fetchMostRecentWetterTemperaturAktuellSchweiz } from '/opt/nodejs/db/wetter/wetter-temperatur-aktuell.db';
 import { fetchMostRecentWetterTemperaturPrognoseSchweiz } from '/opt/nodejs/db/wetter/wetter-temperatur-prognose.db';
-import { fetchWetterTemperaturTrend } from '/opt/nodejs/db/wetter/wetter-temperatur-trend.db';
+import { fetchWetterTemperaturTrendV2 } from '/opt/nodejs/db/wetter/wetter-temperatur-trend-v2.db';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -72,7 +72,7 @@ const getPrognoseTemperatur =
 const getTrend = async (): Promise<DashboardTrendEntryApi> => {
     console.log(`getTrend`);
 
-    const trend = await fetchWetterTemperaturTrend();
+    const trend = await fetchWetterTemperaturTrendV2();
     console.log(`getTrend, trend: ${JSON.stringify(trend)}`);
 
     if (!trend) {

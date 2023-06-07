@@ -1,8 +1,8 @@
 import {
     deleteAllGasImportHistoricalValuesV2,
-    saveAllGasImportHistoricalValuesV2,
-} from '/opt/nodejs/db/gas-import-historical-values-v2.db';
-import { GasImportHistoricalValueSourceV2, map } from '/opt/nodejs/models/gas-import-historical-values-v2.model';
+    saveAllGasImportHistoricalValuesV2
+} from '/opt/nodejs/db/gas/gas-import-historical-values-v2.db';
+import { GasImportHistoricalValueSourceV2, map } from '/opt/nodejs/models/gas/gas-import-historical-values-v2.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { Context, S3Event } from 'aws-lambda';

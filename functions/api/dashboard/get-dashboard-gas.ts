@@ -2,11 +2,11 @@ import { roundOneDecimal } from '/opt/nodejs/utils/number.utils';
 import { createResponse } from '/opt/nodejs/api/api-requests';
 import { DashboardEntryApi } from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
 import { DashboardGasApi } from '/opt/nodejs/api/dashboard/dashboard-gas.api-model';
-import { findMostRecentFuellstandGasspeicherV2ForRegion } from '/opt/nodejs/db/fuellstand-gasspeicher-v2.db';
-import { findMostRecentGasImportHistoricalValuesV2 } from '/opt/nodejs/db/gas-import-historical-values-v2.db';
-import { fetchCurrentGasImportKarte } from '/opt/nodejs/db/gas-import-karte.db';
-import { fetchGasSparzielZielV2 } from '/opt/nodejs/db/gas-sparziel-ziel-v2.db';
-import { FuellstandGasspeicherRegionV2 } from '/opt/nodejs/models/gas-fuellstand-gasspeicher-v2.model';
+import { findMostRecentFuellstandGasspeicherV2ForRegion } from '/opt/nodejs/db/gas/gas-fuellstand-gasspeicher-v2.db';
+import { findMostRecentGasImportHistoricalValuesV2 } from '/opt/nodejs/db/gas/gas-import-historical-values-v2.db';
+import { fetchCurrentGasImportKarte } from '/opt/nodejs/db/gas/gas-import-karte.db';
+import { FuellstandGasspeicherRegionV2 } from '/opt/nodejs/models/gas/gas-fuellstand-gasspeicher-v2.model';
+import { fetchGasSparzielZielV4 } from '/opt/nodejs/db/gas/gas-sparziel-ziel-v4.db';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -107,7 +107,7 @@ const getNettoImport = async (): Promise<DashboardEntryApi> => {
 };
 
 const getAktuelleGesamteinsparung = async (): Promise<DashboardEntryApi> => {
-    const currentValue = await fetchGasSparzielZielV2();
+    const currentValue = await fetchGasSparzielZielV4();
 
     console.log(
         `getAktuelleGesamteinsparung, currentValue: ${JSON.stringify(
