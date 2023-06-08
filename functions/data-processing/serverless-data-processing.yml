@@ -7,7 +7,7 @@ provider:
   name: aws
   runtime: nodejs18.x
   memorySize: 128
-  timeout: 60
+  timeout: 120
   stage: dev
   region: eu-central-1
   tags:
@@ -174,7 +174,6 @@ functions:
     handler: dist/functions/data-processing/strom-kkw/strom-kkw-ausfaelle.handler
     name: ${sls:stage}-data-processing-strom-kkw-ausfaelle-v1
     description: Processes KKW ausfaelle data
-    timeout: 120 # Large file, takes longer
     package:
       patterns:
         - dist/functions/data-processing/strom-kkw/*
