@@ -12,5 +12,4 @@ export interface DiffStatisticsModel {
 
 export interface FiveYearWithDiffStatisticsModel
     extends FiveYearStatisticsModel,
-        DiffStatisticsModel {
-}
+        DiffStatisticsModel {}

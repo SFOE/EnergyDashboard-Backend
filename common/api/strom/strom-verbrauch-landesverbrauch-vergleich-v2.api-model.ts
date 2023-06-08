@@ -19,17 +19,17 @@ export const mapToApiModel = (
 };
 
 const mapToApi = ({
-                      date,
-                      landesverbrauchSG,
-                      landesverbrauchBFE,
-                      landesverbrauchENTSOE,
-                      fiveYearMin,
-                      fiveYearMax,
-                      fiveYearMittelwert,
-                      differenzMittelwert,
-                      differenzMin,
-                      differenzMax
-                  }: StromVerbrauchLandesverbrauchVergleichV2): StromVerbrauchLandesverbrauchVergleichApiV2 => {
+    date,
+    landesverbrauchSG,
+    landesverbrauchBFE,
+    landesverbrauchENTSOE,
+    fiveYearMin,
+    fiveYearMax,
+    fiveYearMittelwert,
+    differenzMittelwert,
+    differenzMin,
+    differenzMax
+}: StromVerbrauchLandesverbrauchVergleichV2): StromVerbrauchLandesverbrauchVergleichApiV2 => {
     return {
         landesverbrauchSG,
         landesverbrauchBFE,

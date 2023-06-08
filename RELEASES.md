@@ -56,3 +56,7 @@ Small Improvements following the 2.0.0 release
 - Improved Responsiveness in charts and tooltips
 - Added expandable and collapseable texts
 - Fixed issues and inconsistencies in charts and data
+
+## v2.1.1 - 08.06.2023
+
+Raised timeout of lambda functions

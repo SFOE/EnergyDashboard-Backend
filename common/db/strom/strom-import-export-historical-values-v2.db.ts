@@ -18,5 +18,5 @@ export const saveAllStromImportExportHistoricalValuesV2 = async (data: StromImpo
 
 export const deleteAllStromImportExportHistoricalValuesV2 = async () => {
     await deleteAll(tableName);
-};
+}
 

@@ -126,16 +126,16 @@ const mapRegionEntries = (
 };
 
 const mapToApi = ({
-                      speicherstandProzent,
-                      speicherstandTWh,
-                      fiveYearMin,
-                      fiveYearMax,
-                      fiveYearMittelwert,
-                      date,
-                      differenzMittelwert,
-                      differenzMin,
-                      differenzMax
-                  }: FuellstandGasspeicherV2): FuellstandGasspeicherApiV2 => {
+    speicherstandProzent,
+    speicherstandTWh,
+    fiveYearMin,
+    fiveYearMax,
+    fiveYearMittelwert,
+    date,
+    differenzMittelwert,
+    differenzMin,
+    differenzMax
+}: FuellstandGasspeicherV2): FuellstandGasspeicherApiV2 => {
     return {
         speicherstandProzent,
         speicherstandTWh,

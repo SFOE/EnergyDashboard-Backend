@@ -18,18 +18,18 @@ export const mapToApiModel = (
 };
 
 const mapToApi = ({
-                      date,
-                      endverbrauch,
-                      fiveYearMin,
-                      fiveYearMax,
-                      fiveYearMittelwert,
-                      differenzMittelwert,
-                      differenzMin,
-                      differenzMax,
-                      prognoseMittelwert,
-                      prognoseMin,
-                      prognoseMax
-                  }: StromVerbrauchEndverbrauchV2): StromVerbrauchEndverbrauchApiV2 => {
+    date,
+    endverbrauch,
+    fiveYearMin,
+    fiveYearMax,
+    fiveYearMittelwert,
+    differenzMittelwert,
+    differenzMin,
+    differenzMax,
+    prognoseMittelwert,
+    prognoseMin,
+    prognoseMax
+}: StromVerbrauchEndverbrauchV2): StromVerbrauchEndverbrauchApiV2 => {
     return {
         endverbrauch,
         fiveYearMin,

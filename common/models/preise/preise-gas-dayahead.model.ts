@@ -7,8 +7,7 @@ export interface PreiseGasDayaheadSource {
     ttf_day_ahead_EUR_MWh: string;
 }
 
-export interface PreiseGasDayahead extends PreiseCommon {
-}
+export interface PreiseGasDayahead extends PreiseCommon {}
 
 export const map = (
     records: PreiseGasDayaheadSource[]

@@ -4,11 +4,9 @@ import {
     mapFuturesRecord
 } from '/opt/nodejs/utils/preise.utils';
 
-export interface PreiseGasFuturesSource extends PreiseFuturesSource {
-}
+export interface PreiseGasFuturesSource extends PreiseFuturesSource {}
 
-export interface PreiseGasFutures extends PreiseFutures {
-}
+export interface PreiseGasFutures extends PreiseFutures {}
 
 export const map = (records: PreiseGasFuturesSource[]): PreiseGasFutures[] => {
     return filterRelevantPriceEntries(

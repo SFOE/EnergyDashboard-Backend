@@ -22,12 +22,12 @@ export const mapToApiModel = (translations: DynamicTranslation[]): DynamicTransl
         fr[translation.key] = translation.fr;
         it[translation.key] = translation.it;
         en[translation.key] = translation.en;
-    });
+    })
 
     return {
         de,
         fr,
         it,
-        en
-    };
-};
+        en,
+    }
+}

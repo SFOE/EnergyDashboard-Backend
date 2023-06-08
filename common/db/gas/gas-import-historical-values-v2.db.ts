@@ -18,13 +18,13 @@ export const findMostRecentGasImportHistoricalValuesV2 = async (): Promise<GasIm
         .slice()
         .reverse()
         .find(entry => entry.nettoimport !== null);
-};
+}
 
 export const deleteAllGasImportHistoricalValuesV2 = async () => {
     await deleteAll(tableName);
-};
+}
 
 export const saveAllGasImportHistoricalValuesV2 = async (data: GasImportHistoricalValueV2[]) => {
     await saveAll(tableName, data);
-};
+}
 

@@ -70,7 +70,7 @@ const mapCurrentEntry = (
     return {
         landesverbrauchPrognose: entry.landesverbrauchPrognose,
         landesverbrauchPrognoseInFiveDays:
-        entryInFiveDays.landesverbrauchPrognose,
+            entryInFiveDays.landesverbrauchPrognose,
         date: entry.date,
         trend: entry.trend,
         trendRating: entry.trendRating
@@ -78,16 +78,16 @@ const mapCurrentEntry = (
 };
 
 const mapToApi = ({
-                      date,
-                      landesverbrauch,
-                      landesverbrauchPrognose,
-                      fiveYearMin,
-                      fiveYearMax,
-                      fiveYearMittelwert,
-                      differenzMittelwert,
-                      differenzMin,
-                      differenzMax
-                  }: StromVerbrauchLandesverbrauchMitPrognoseV2): StromVerbrauchLandesverbrauchMitPrognoseEntryApiV2 => {
+    date,
+    landesverbrauch,
+    landesverbrauchPrognose,
+    fiveYearMin,
+    fiveYearMax,
+    fiveYearMittelwert,
+    differenzMittelwert,
+    differenzMin,
+    differenzMax
+}: StromVerbrauchLandesverbrauchMitPrognoseV2): StromVerbrauchLandesverbrauchMitPrognoseEntryApiV2 => {
     const isBeforeToday = isDateBeforeOrEqualsToday(new Date(date));
 
     return {

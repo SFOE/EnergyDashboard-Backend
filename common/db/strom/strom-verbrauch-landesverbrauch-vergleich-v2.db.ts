@@ -18,4 +18,4 @@ export const saveAllStromVerbrauchLandesverbrauchVergleichV2 = async (data: Stro
 
 export const deleteAllStromVerbrauchLandesverbrauchVergleichV2 = async () => {
     await deleteAll(tableName);
-};
+}

@@ -13,9 +13,9 @@ export interface AmpelEntrySource {
 
 
 export interface Ampel {
-    id: 'ampel';
-    ampelStatusStrom: AmpelEntry[];
-    ampelStatusGas: AmpelEntry[];
+    id: 'ampel'
+    ampelStatusStrom: AmpelEntry[]
+    ampelStatusGas: AmpelEntry[]
 }
 
 export interface AmpelEntry {
@@ -27,13 +27,13 @@ export const map = (source: AmpelSource): Ampel => {
     return {
         id: 'ampel',
         ampelStatusStrom: source.ampel_status_strom.map(entry => mapEntry(entry)),
-        ampelStatusGas: source.ampel_status_gas.map(entry => mapEntry(entry))
-    };
-};
+        ampelStatusGas: source.ampel_status_gas.map(entry => mapEntry(entry)),
+    }
+}
 
 const mapEntry = (source: AmpelEntrySource): AmpelEntry => {
     return {
         level: source.level,
-        validFrom: source.valid_from
+        validFrom: source.valid_from,
     };
-};
+}

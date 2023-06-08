@@ -4,11 +4,9 @@ import {
     mapFuturesRecord
 } from '/opt/nodejs/utils/preise.utils';
 
-export interface PreiseStromFuturesSource extends PreiseFuturesSource {
-}
+export interface PreiseStromFuturesSource extends PreiseFuturesSource {}
 
-export interface PreiseStromFutures extends PreiseFutures {
-}
+export interface PreiseStromFutures extends PreiseFutures {}
 
 export const map = (
     records: PreiseStromFuturesSource[]

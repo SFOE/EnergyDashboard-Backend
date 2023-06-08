@@ -4,13 +4,13 @@ import { dateSortFn } from '/opt/nodejs/utils/sort.utils';
 
 export interface StromKkwProduktionApi {
     entries: StromKkwProduktionV1[];
-    ausfaelle: StromKkwAusfallV1[];
+    ausfaelle: StromKkwAusfallV1[]
 }
 
 export const mapToApiModel = (productionRecords: StromKkwProduktionV1[], ausfallRecords: StromKkwAusfallV1[]): StromKkwProduktionApi => {
     return {
         entries: productionRecords.sort(dateSortFn),
         ausfaelle: ausfallRecords
-    };
+    }
 };
 

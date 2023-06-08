@@ -25,6 +25,6 @@ const processKkwAusfaelle = async () => {
     );
     const data: StromKkwAusfallV1[] = mapRecords(records);
 
-    await deleteAllStromKkwAusfaelle();
+    await deleteAllStromKkwAusfaelle()
     await saveStromKkwAusfaelle(data);
 };

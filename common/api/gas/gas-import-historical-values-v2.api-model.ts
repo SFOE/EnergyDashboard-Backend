@@ -15,15 +15,15 @@ export const mapToApiModel = (
 };
 
 const mapToApi = ({
-                      date,
-                      nettoimport,
-                      fiveYearMin,
-                      fiveYearMax,
-                      fiveYearMittelwert,
-                      differenzMittelwert,
-                      differenzMin,
-                      differenzMax
-                  }: GasImportHistoricalValueV2): GasImportHistoricalValuesApiV2 => {
+    date,
+    nettoimport,
+    fiveYearMin,
+    fiveYearMax,
+    fiveYearMittelwert,
+    differenzMittelwert,
+    differenzMin,
+    differenzMax
+}: GasImportHistoricalValueV2): GasImportHistoricalValuesApiV2 => {
     return {
         nettoimport,
         fiveYearMin,

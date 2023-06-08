@@ -22,7 +22,7 @@ const processPreiseStromFutures = async () => {
         SourceFiles.PREISE_STROM_FUTURES
     );
     const data = map(records);
-
+    
     await deleteAllPreiseStromFutures();
     await saveAllPreiseStromFutures(data);
 };

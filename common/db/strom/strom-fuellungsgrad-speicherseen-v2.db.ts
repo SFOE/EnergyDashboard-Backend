@@ -27,9 +27,9 @@ export const findMostRecentStromFuellungsgradSpeicherseenV2ForRegion = async (re
 
 export const saveAllStromFuellungsgradSpeicherseenV2 = async (data: StromFuellungsgradSpeicherseenV2[]) => {
     await saveAll(tableName, data);
-};
+}
 
 export const deleteAllStromFuellungsgradSpeicherseenV2 = async () => {
     await deleteAll(tableName);
-};
+}
 

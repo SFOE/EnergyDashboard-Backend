@@ -75,19 +75,19 @@ const filterEntries = (
 };
 
 const mapToApi = ({
-                      date,
-                      speicherstandProzent,
-                      speicherstandGWh,
-                      speicherstandBei100ProzentInGWh,
-                      fiveYearMin,
-                      fiveYearMax,
-                      fiveYearMittelwert,
-                      historicalMin,
-                      historicalMinWithReserves,
-                      differenzMittelwert,
-                      differenzMin,
-                      differenzMax
-                  }: StromFuellungsgradSpeicherseenV2): FuellungsgradSpeicherseenApiV2 => ({
+    date,
+    speicherstandProzent,
+    speicherstandGWh,
+    speicherstandBei100ProzentInGWh,
+    fiveYearMin,
+    fiveYearMax,
+    fiveYearMittelwert,
+    historicalMin,
+    historicalMinWithReserves,
+    differenzMittelwert,
+    differenzMin,
+    differenzMax
+}: StromFuellungsgradSpeicherseenV2): FuellungsgradSpeicherseenApiV2 => ({
     date,
     speicherstandProzent,
     speicherstandGWh,

@@ -38,15 +38,15 @@ export const mapToApiModel = (
 };
 
 const mapToApi = ({
-                      date,
-                      lufttemperaturTagesmittel,
-                      lufttemperaturTagesmittelNorm,
-                      fiveYearMin,
-                      fiveYearMax,
-                      differenzNorm,
-                      differenzMin,
-                      differenzMax
-                  }: WetterTemperaturAktuell): WetterTemperaturAktuellEntryApi => {
+    date,
+    lufttemperaturTagesmittel,
+    lufttemperaturTagesmittelNorm,
+    fiveYearMin,
+    fiveYearMax,
+    differenzNorm,
+    differenzMin,
+    differenzMax
+}: WetterTemperaturAktuell): WetterTemperaturAktuellEntryApi => {
     return {
         date,
         lufttemperaturTagesmittel,

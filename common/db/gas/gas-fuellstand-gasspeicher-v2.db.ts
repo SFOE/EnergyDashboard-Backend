@@ -23,14 +23,14 @@ export const findMostRecentFuellstandGasspeicherV2ForRegion = async (region: Fue
         .slice()
         .reverse()
         .find(entry => entry.speicherstandProzent !== null);
-};
+}
 
 export const saveAllFuellstandGasspeicherV2 = async (data: FuellstandGasspeicherV2[]) => {
     await saveAll(tableName, data);
-};
+}
 
 export const deleteAllFuellstandGasspeicherV2 = async () => {
     await deleteAll(tableName);
-};
+}
 
 

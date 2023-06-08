@@ -15,8 +15,8 @@ export const fetchGasSparzielZielV4 = async (): Promise<SparzielZielV4> => {
 
 export const deleteAllGasSparzielZielV4 = async () => {
     await deleteAll(tableName);
-};
+}
 
 export const saveGasSparzielZielV4 = async (data: SparzielZielV4) => {
     await saveAll(tableName, [data]);
-};
+}
