@@ -3,7 +3,8 @@ import { ImagesProcessingFunction, RoutingFunctions } from '/opt/nodejs/source-f
 import { withEnvPrefix } from '/opt/nodejs/utils/env.utils';
 import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { Context, S3Event } from 'aws-lambda';
-import { containsSVGinFilename } from '/opt/nodejs/utils/string.utils';
+import { isFilenameEndingWith } from '/opt/nodejs/utils/string.utils';
+import { SupportedImageFileTypes } from '/opt/nodejs/models/base/image.enum';
 
 export const handler = async (event: S3Event, context: Context): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -18,7 +19,7 @@ export const handler = async (event: S3Event, context: Context): Promise<any> =>
 const routeFunction = async (fileName: string) => {
     let targetFunction: string;
 
-    if (containsSVGinFilename(fileName)) {
+    if (isFilenameEndingWith(fileName, SupportedImageFileTypes)) {
         // Handles all svg images
         targetFunction = withEnvPrefix(ImagesProcessingFunction);
     } else {

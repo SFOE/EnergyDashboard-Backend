@@ -1,8 +1,32 @@
 services:
-  service-energy-dashboard-backend-api:
+  service-energy-dashboard-api:
     path: functions/api
     config: serverless-api.yml
 
-  service-energy-dashboard-backend-data-processing:
+  service-energy-dashboard-api-dashboard:
+    path: functions/api/dashboard
+    config: serverless-dashboard.yml
+
+  service-energy-dashboard-api-gas:
+    path: functions/api/gas
+    config: serverless-gas.yml
+
+  service-energy-dashboard-api-preise:
+    path: functions/api/preise
+    config: serverless-preise.yml
+
+  service-energy-dashboard-api-strom:
+    path: functions/api/strom
+    config: serverless-strom.yml
+
+  service-energy-dashboard-api-wetter:
+    path: functions/api/wetter
+    config: serverless-wetter.yml
+
+  service-energy-dashboard-api-data-processing:
     path: functions/data-processing
     config: serverless-data-processing.yml
+
+  service-energy-dashboard-api-infrastructure:
+    path: infrastructure
+    config: serverless-infrastructure.yml

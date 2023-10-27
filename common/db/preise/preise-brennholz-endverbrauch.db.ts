@@ -15,7 +15,7 @@ export const fetchAllPreiseBrennholzEndverbrauch = async (): Promise<
     return fetchAll(tableName);
 };
 
-export const fetchCurrentBrennholzEndverbrauch =
+export const fetchCurrentPreiseBrennholzEndverbrauch =
     async (): Promise<PreiseBrennholzEndverbrauch> => {
         const items = await fetchAllPreiseBrennholzEndverbrauch();
         return getMostRecentEntry(items);

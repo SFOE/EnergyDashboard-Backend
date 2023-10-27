@@ -9,4 +9,5 @@ export interface DashboardWetterApiV2 {
     prognoseTemperatur: DashboardEntryWithoutDateApi;
     niederschlaege: DashboardEntryApi;
     schneereserven: DashboardEntryApi;
+    heizgradtage: DashboardEntryApi;
 }

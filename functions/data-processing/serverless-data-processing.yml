@@ -2,6 +2,8 @@ service: energy-dashboard-backend-data
 
 plugins:
   - '@shelf/serverless-simplify-default-exec-role-plugin'
+  - 'serverless-plugin-lambda-insights'
+  - 'serverless-plugin-aws-alerts'
 
 provider:
   name: aws
@@ -18,6 +20,24 @@ provider:
     S3_BUCKET: bfe-energy-dashboard-raw-data-${sls:stage}
     S3_IMAGE_BUCKET: bfe-energie-dashboard-public-static-files-${sls:stage}
     ENV: ${sls:stage}
+
+custom:
+  lambdaInsights:
+    defaultLambdaInsights: true #enables Lambda Insights for all functions
+  alerts:
+    topics:
+      alarm:
+        topic: ${self:service}-${opt:stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: bas@ti8m.ch
+          - protocol: email
+            endpoint: energiedashboard@ti8m.ch
+          - protocol: email
+            endpoint: yannik.inniger@ti8m.ch
+    alarms:
+      - functionErrors
+      - functionThrottles
 
 package:
   exclude:
@@ -258,10 +278,32 @@ functions:
       - !Ref CommonDashlayerLambdaLayer
       - !Ref NodeDashmodulesDashlayerLambdaLayer
 
+  data-processing-strom-sparziel-ziel-v5:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-ziel-v5.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-ziel-v5
+    description: Processes data for Strom Sparziel Ziel V5
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
   data-processing-strom-sparziel-aktuelle-einsparung-v4:
     handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-aktuelle-einsparung-v4.handler
     name: ${sls:stage}-data-processing-strom-sparziel-aktuelle-einsparung-v4
     description: Processes data for Strom Sparziel Aktuelle Einsparung Version 4
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-sparziel-aktuelle-einsparung-v5:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-aktuelle-einsparung-v5.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-aktuelle-einsparung-v5
+    description: Processes data for Strom Sparziel Aktuelle Einsparung Version 5
     package:
       patterns:
         - dist/functions/data-processing/strom-sparziel/*
@@ -324,10 +366,32 @@ functions:
       - !Ref CommonDashlayerLambdaLayer
       - !Ref NodeDashmodulesDashlayerLambdaLayer
 
+  data-processing-strom-sparziel-5-prozent-einsparungen-v2:
+    handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-5-prozent-einsparungen-v2.handler
+    name: ${sls:stage}-data-processing-strom-sparziel-5-prozent-einsparungen-v2
+    description: Processes data for Strom Sparziel 5 Prozent Einsparungen V2
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
   data-processing-gas-sparziel-ziel-v4:
     handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-ziel-v4.handler
     name: ${sls:stage}-data-processing-gas-sparziel-ziel-v4
     description: Processes data for Gas Sparziel Ziel Version 4
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-ziel-v5:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-ziel-v5.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-ziel-v5
+    description: Processes data for Gas Sparziel Ziel Version 5
     package:
       patterns:
         - dist/functions/data-processing/gas-sparziel/*
@@ -342,6 +406,50 @@ functions:
     package:
       patterns:
         - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-sparziel-aktuelle-einsparung-v5:
+    handler: dist/functions/data-processing/gas-sparziel/gas-sparziel-aktuelle-einsparung-v5.handler
+    name: ${sls:stage}-data-processing-gas-sparziel-aktuelle-einsparung-v5
+    description: Processes data for Gas Sparziel Aktuelle Einsparung Version 5
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-import-europa-jaehrlich:
+    handler: dist/functions/data-processing/gas-import-europa/gas-import-europa-jaehrlich.handler
+    name: ${sls:stage}-data-processing-gas-import-europa-jaehrlich
+    description: Processes data for Gas Import Europa Jaehrlich
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-import-europa/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-import-europa-taeglich:
+    handler: dist/functions/data-processing/gas-import-europa/gas-import-europa-taeglich.handler
+    name: ${sls:stage}-data-processing-gas-import-europa-taeglich
+    description: Processes data for Gas Import Europa Taeglich
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-import-europa/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-gas-import-europa-trend:
+    handler: dist/functions/data-processing/gas-import-europa/gas-import-europa-trend.handler
+    name: ${sls:stage}-data-processing-gas-import-europa-trend
+    description: Processes data for Gas Import Europa Trend
+    package:
+      patterns:
+        - dist/functions/data-processing/gas-import-europa/*
     layers:
       - !Ref CommonDashlayerLambdaLayer
       - !Ref NodeDashmodulesDashlayerLambdaLayer
@@ -489,6 +597,28 @@ functions:
       - !Ref CommonDashlayerLambdaLayer
       - !Ref NodeDashmodulesDashlayerLambdaLayer
 
+  data-processing-preise-strom-europa:
+    handler: dist/functions/data-processing/preise/preise-strom-europa.handler
+    name: ${sls:stage}-data-processing-preise-strom-europa
+    description: Processes data for Preise Strom Europa
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-preise-strom-europa-trend:
+    handler: dist/functions/data-processing/preise/preise-strom-europa-trend.handler
+    name: ${sls:stage}-data-processing-preise-strom-europa-trend
+    description: Processes data for Preise Strom Europa trend
+    package:
+      patterns:
+        - dist/functions/data-processing/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
   data-processing-wetter-temperatur-aktuell:
     handler: dist/functions/data-processing/wetter/wetter-temperatur-aktuell.handler
     name: ${sls:stage}-data-processing-wetter-temperatur-aktuell
@@ -555,6 +685,39 @@ functions:
       - !Ref CommonDashlayerLambdaLayer
       - !Ref NodeDashmodulesDashlayerLambdaLayer
 
+  data-processing-wetter-heizgradtage-zeitreihe:
+    handler: dist/functions/data-processing/wetter/wetter-heizgradtage-zeitreihe.handler
+    name: ${sls:stage}-data-processing-wetter-heizgradtage-zeitreihe
+    description: Processes data for Wetter Heizgradtage Zeitreihe
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-wetter-heizgradtage-tabelle-daten:
+    handler: dist/functions/data-processing/wetter/wetter-heizgradtage-tabelle-daten.handler
+    name: ${sls:stage}-data-processing-wetter-heizgradtage-tabelle-daten
+    description: Processes data for Wetter Heizgradtage Tabelle Daten
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-wetter-heizgradtage-trend:
+    handler: dist/functions/data-processing/wetter/wetter-heizgradtage-trend.handler
+    name: ${sls:stage}-data-processing-wetter-heizgradtage-trend
+    description: Processes data for Wetter Heizgradtage Trend
+    package:
+      patterns:
+        - dist/functions/data-processing/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
   data-processing-images:
     handler: dist/functions/data-processing/images/images.handler
     name: ${sls:stage}-data-processing-images
@@ -565,246 +728,3 @@ functions:
     layers:
       - !Ref CommonDashlayerLambdaLayer
       - !Ref NodeDashmodulesDashlayerLambdaLayer
-
-resources: # CloudFormation template syntax from here on.
-  Transform: AWS::Serverless-2016-10-31
-  Resources:
-    # Default Template for DynamoDB Table
-    DynamoDBTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        PrimaryKey:
-          Name: id
-          Type: String
-        Tags:
-          STAGE: ${sls:stage}
-
-    # Tables Strom
-    StromFuellungsgradSpeicherseenV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-fuellungsgrad-speicherseen-v2
-    StromImportExportHistoricalValuesV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-import-export-historical-values-v2
-    StromImportExportNettoTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-import-export-netto
-    StromImportExportUebersichtTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-import-export-uebersicht
-    StromProduktionsmixTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-produktionsmix
-    StromProduktionImportVerbrauchTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-produktion-import-verbrauch
-    StromVerbrauchLandesverbrauchMitPrognoseV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-verbrauch-landesverbrauch-mit-prognose-v2
-    StromVerbrauchEndverbrauchV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-verbrauch-endverbrauch-v2
-    StromVerbrauchLandesverbrauchVergleichV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-verbrauch-landesverbrauch-vergleich-v2
-    StromSparzielZielV4Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-sparziel-ziel-v4
-    StromSparzielAktuelleEinsparungV4Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-sparziel-aktuelle-einsparung-v4
-    StromSparzielEinsparungProMonatKundengruppeV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-sparziel-einsparung-pro-monat-kundengruppe-v2
-    StromSparzielEinsparungAktuellerMonatKundengruppeTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-sparziel-einsparung-aktueller-monat-kundengruppe
-    StromSparzielZielAktuellerMonatKundengruppeTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-sparziel-ziel-aktueller-monat-kundengruppe
-    StromSparziel5ProzentPeakHTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-sparziel-5-prozent-peak-h
-    StromSparziel5ProzentEinsparungenTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-sparziel-5-prozent-einsparungen
-    StromSparzielKKWProduktionCHV1Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-kkw-produktion-ch-v1
-    StromSparzielKKWProduktionFRV1Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-strom-kkw-produktion-fr-v1
-
-    # Tables Strom without default values
-    StromKkwAusfaelleTablePatch1:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${sls:stage}-strom-kkw-ausfaelle-v1-p1
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: country
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        BillingMode: PAY_PER_REQUEST
-        GlobalSecondaryIndexes:
-          - IndexName: country-index
-            Projection:
-              ProjectionType: ALL
-            KeySchema:
-              - AttributeName: country
-                KeyType: HASH
-        Tags:
-          - Key: STAGE
-            Value: ${sls:stage}
-    StromKkwVerfuegbarkeitTablePatch1:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${sls:stage}-strom-kkw-verfuegbarkeit-p1
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: country
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        BillingMode: PAY_PER_REQUEST
-        GlobalSecondaryIndexes:
-          - IndexName: country-index
-            Projection:
-              ProjectionType: ALL
-            KeySchema:
-              - AttributeName: country
-                KeyType: HASH
-        Tags:
-          - Key: STAGE
-            Value: ${sls:stage}
-
-    # Tables Gas
-    GasFuellstandGasspeicherV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-gas-fuellstand-gasspeicher-v2
-    GasImportKarteTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-gas-import-karte
-    GasImportHistoricalValuesV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-gas-import-historical-values-v2
-    GasSparzielZielV4Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-gas-sparziel-ziel-v4
-    GasSparzielAktuelleEinsparungV4Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-gas-sparziel-aktuelle-einsparung-v4
-
-    # Tables Preise
-    PreiseStromBoerseTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-strom-boerse
-    PreiseStromEndverbrauchTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-strom-endverbrauch
-    PreiseFuturesStromTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-strom-futures
-    PreiseGasDayaheadTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-gas-dayahead
-    PreiseGasEndverbrauchTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-gas-endverbrauch
-    PreiseFuturesGasTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-gas-futures
-    PreiseTreibstoffBleifreiTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-treibstoff-bleifrei
-    PreiseTreibstoffDieselTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-treibstoff-diesel
-    PreiseHeizoelEntwicklungTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-heizoel-entwicklung
-    PreiseBrennholzEndverbrauchTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-brennholz-endverbrauch
-    PreiseFernwaermeEndverbrauchTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-preise-fernwaerme-endverbrauch
-
-    # Tables Wetter
-    WetterTemperaturAktuellTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-wetter-temperatur-aktuell
-    WetterTemperaturPrognoseTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-wetter-temperatur-prognose
-    WetterTemperaturTrendV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-wetter-temperatur-trend-v2
-    WetterNiederschlagV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-wetter-niederschlag-v2
-    WetterNiederschlagBilderDatenTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-wetter-niederschlag-bilder-daten
-    WetterSchneerservenTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-wetter-schneereserven
-
-    # Tables Overview
-    DynamicTranslationsTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-dynamic-translations
-    AmpelTable:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-ampel
-    SpartippsV2Table:
-      Type: AWS::Serverless::SimpleTable
-      Properties:
-        TableName: ${sls:stage}-spartipps-v2

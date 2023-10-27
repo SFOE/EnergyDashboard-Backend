@@ -1,7 +1,9 @@
 # Energy Dashboard Backend & API - Releases
 
 ## v1.0.0 - 13.12.2022
+
 Initial Release of Energy-Dashboard. Includes the basic setup and all functions and APIs for the initial release. The following KPIs and functionality are included:
+
 - Overview: Strom, Gas, Wetter, Preise, Lagebeurteilung, Energie Sparen
 - Ampel: Strom, Gas
 - Dynamic Translations
@@ -11,18 +13,21 @@ Initial Release of Energy-Dashboard. Includes the basic setup and all functions 
 - Wetter: Temperatur
 
 ## v1.1.0 - 22.12.2022
+
 - Added version 2 APIs for the following KPIs to be able to manage year-end problems:
-   - Strom: Verbrauch, Füllstand Speicherseen, Import/Export
-   - Gas: Nettoimport, Füllstände Gasspeicher EU, Sparziel
-   - Overview: Strom, Gas
+  - Strom: Verbrauch, Füllstand Speicherseen, Import/Export
+  - Gas: Nettoimport, Füllstände Gasspeicher EU, Sparziel
+  - Overview: Strom, Gas
 - Added Speicherstand at 100 percent capacity for Füllstand Speicherseen
 - Improved packaging and deployment of lambda functions
 - Added API for Preise: Fernwärme and Brennholz
 
 ## v1.1.1 - 23.12.2022
+
 Hotfix for Gas Sparziel on Overview
 
 ## v1.1.2 - 01.01.2023
+
 Hotfix for Strom Produktionsmix due to year-end change
 
 ## v1.1.3 - 18.01.2023
@@ -60,3 +65,23 @@ Small Improvements following the 2.0.0 release
 ## v2.1.1 - 08.06.2023
 
 Raised timeout of lambda functions
+
+## v2.2.0 - 28.06.2023
+
+Added v5 API for
+
+- Strom Sparziel aktuell
+- Gas Sparziel aktuell
+
+## v2.2.1 - 29.08.2023
+
+Hotfix Release for Dashboard Strom Verbrauch
+
+## v3.0.0 - 25.10.2023
+
+- Strompreis Karte Europa
+- Wetter Heizgradtage
+- Gas Import Europa
+- Mehr-/Minderverbrauch Strom
+- Mehr-/Minderverauch Gas
+- App Release

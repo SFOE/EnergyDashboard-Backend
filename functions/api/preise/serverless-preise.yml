@@ -1,0 +1,259 @@
+service: energy-dashboard-api-preise
+
+plugins:
+  - '@shelf/serverless-simplify-default-exec-role-plugin'
+  - 'serverless-plugin-lambda-insights'
+  - 'serverless-plugin-aws-alerts'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 128
+  timeout: 25
+  stage: dev
+  region: eu-central-1
+  tags:
+    STAGE: ${sls:stage}
+  tracing:
+    lambda: true # optional, enables tracing for all functions (can be true (true equals 'Active') 'Active' or 'PassThrough')
+  environment:
+    S3_BUCKET: bfe-energy-dashboard-raw-data-${sls:stage}
+    ENV: ${sls:stage}
+
+custom:
+  lambdaInsights:
+    defaultLambdaInsights: true #enables Lambda Insights for all functions
+  alerts:
+    topics:
+      alarm:
+        topic: ${self:service}-${opt:stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: bas@ti8m.ch # Change this to your email address
+          - protocol: email
+            endpoint: energiedashboard@ti8m.ch
+          - protocol: email
+            endpoint: yannik.inniger@ti8m.ch
+    alarms:
+      - functionErrors
+      - functionThrottles
+
+package:
+  exclude:
+    - node_modules/**
+
+layers:
+  common-layer:
+    path: dist/common-layer
+    name: ${sls:stage}-common-layer
+    description: Contains common source used in multiple functions
+    package:
+      include:
+        - dist/common-layer
+    compatibleRuntimes:
+      - nodejs16.x
+  node-modules-layer:
+    path: dist/node-modules-layer
+    name: ${sls:stage}-node-modules-layer
+    description: Contains all node modules used in functions
+    package:
+      include:
+        - dist/node-modules-layer
+    compatibleRuntimes:
+      - nodejs16.x
+
+functions:
+  api-preise-treibstoff-bleifrei:
+    handler: dist/functions/api/preise/get-preise-treibstoff-bleifrei.handler
+    name: ${sls:stage}-api-get-preise-treibstoff-bleifrei
+    description: Provides API to access data for Preise Treibstoff Bleifrei
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/treibstoff-bleifrei
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-treibstoff-diesel:
+    handler: dist/functions/api/preise/get-preise-treibstoff-diesel.handler
+    name: ${sls:stage}-api-get-preise-treibstoff-diesel
+    description: Provides API to access data for Preise Treibstoff Diesel
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/treibstoff-diesel
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-gas-endverbrauch:
+    handler: dist/functions/api/preise/get-preise-gas-endverbrauch.handler
+    name: ${sls:stage}-api-get-preise-gas-endverbrauch
+    description: Provides API to access data for Preise Gas Endverbrauch
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/gas-endverbrauch
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-gas-dayahead:
+    handler: dist/functions/api/preise/get-preise-gas-dayahead.handler
+    name: ${sls:stage}-api-get-preise-gas-dayahead
+    description: Provides API to access data for Preise Gas Dayahead
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/gas-dayahead
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-gas-futures:
+    handler: dist/functions/api/preise/get-preise-gas-futures.handler
+    name: ${sls:stage}-api-get-preise-gas-futures
+    description: Provides API to access data for Preise Gas Futures
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/gas-futures
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-heizoel-entwicklung:
+    handler: dist/functions/api/preise/get-preise-heizoel-entwicklung.handler
+    name: ${sls:stage}-api-get-preise-heizoel-entwicklung
+    description: Provides API to access data for Preise Heizoel Entwicklung
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/heizoel-entwicklung
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-strom-boerse:
+    handler: dist/functions/api/preise/get-preise-strom-boerse.handler
+    name: ${sls:stage}-api-get-preise-strom-boerse
+    description: Provides API to access data for Preise Strom Boerse
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/strom-boerse
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-strom-endverbrauch:
+    handler: dist/functions/api/preise/get-preise-strom-endverbrauch.handler
+    name: ${sls:stage}-api-get-preise-strom-endverbrauch
+    description: Provides API to access data for Preise Strom Endverbrauch
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/strom-endverbrauch
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-strom-futures:
+    handler: dist/functions/api/preise/get-preise-strom-futures.handler
+    name: ${sls:stage}-api-get-preise-strom-futures
+    description: Provides API to access data for Preise Strom Futures
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/strom-futures
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-brennholz-endverbrauch:
+    handler: dist/functions/api/preise/get-preise-brennholz-endverbrauch.handler
+    name: ${sls:stage}-api-get-preise-brennholz-endverbrauch
+    description: Provides API to access data for Preise Brennholz Endverbrauch
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/brennholz-endverbrauch
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-fernwaerme-endverbrauch:
+    handler: dist/functions/api/preise/get-preise-fernwaerme-endverbrauch.handler
+    name: ${sls:stage}-api-get-preise-fernwaerme-endverbrauch
+    description: Provides API to access data for Preise Fernwaerme Endverbrauch
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/fernwaerme-endverbrauch
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-strom-europa:
+    handler: dist/functions/api/preise/get-preise-strom-europa.handler
+    name: ${sls:stage}-api-get-preise-strom-europa
+    description: Provides API to access data for Preise Strom Europa
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/strom-europa
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-preise-strom-europa-trend:
+    handler: dist/functions/api/preise/get-preise-strom-europa-trend.handler
+    name: ${sls:stage}-api-get-preise-strom-europa-trend
+    description: Provides API to access data for Preise Strom Europa trend
+    events:
+      - httpApi:
+          method: GET
+          path: /api/preise/strom-europa-trend
+    package:
+      patterns:
+        - dist/functions/api/preise/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer

@@ -5,4 +5,5 @@ export interface DashboardGasApi {
     fuellstandNachbarlaender: DashboardEntryApi;
     nettoImport: DashboardEntryApi;
     aktuelleGesamteinsparung: DashboardEntryApi;
+    importEuropa: DashboardEntryApi;
 }

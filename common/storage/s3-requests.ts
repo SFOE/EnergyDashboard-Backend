@@ -5,8 +5,10 @@ import { Readable } from 'stream';
 import { SdkStream } from '@aws-sdk/types';
 import { CopyObjectCommandInput } from '@aws-sdk/client-s3/dist-types/commands/CopyObjectCommand';
 
-export const getCSVFileFromS3 = async <T>(fileName: string): Promise<T[]> => {
-    const body = await getFileFromS3Bucket(fileName);
+export const getCSVFileFromS3 = async <T>(fileName: string, encoding?: string): Promise<T[]> => {
+    const body = await getFileFromS3Bucket(fileName, encoding);
+    console.log(`body: ${body}`);
+
     const records: T[] = parse(body, {
         columns: true,
         delimiter: ',',
@@ -18,19 +20,16 @@ export const getCSVFileFromS3 = async <T>(fileName: string): Promise<T[]> => {
     return records;
 };
 
-export const getJSONFileFromS3 = async <T>(fileName: string): Promise<T> => {
-    const body = await getFileFromS3Bucket(fileName);
+export const getJSONFileFromS3 = async <T>(fileName: string, encoding?: string): Promise<T> => {
+    const body = await getFileFromS3Bucket(fileName, encoding);
     return JSON.parse(body);
 };
 
-const getFileFromS3Bucket = async (fileName: string): Promise<string> => {
+const getFileFromS3Bucket = async (fileName: string, encoding?: string): Promise<string> => {
     try {
+        console.log(`File encoding: ${encoding}`);
         const blob = await getFileFromS3BucketAsBlob(fileName);
-
-        const body = blob.transformToString();
-        console.log(`body: ${body}`);
-
-        return body;
+        return blob.transformToString(encoding);
     } catch (err) {
         console.error(err);
         const message = `Error getting object ${fileName}. Make sure they exist and your bucket is in the same region as this function and the lambda function has the proper permissions`;

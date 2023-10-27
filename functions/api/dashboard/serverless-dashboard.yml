@@ -1,0 +1,194 @@
+service: energy-dashboard-api-dashboard
+
+plugins:
+  - '@shelf/serverless-simplify-default-exec-role-plugin'
+  - 'serverless-plugin-lambda-insights'
+  - 'serverless-plugin-aws-alerts'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 128
+  timeout: 25
+  stage: dev
+  region: eu-central-1
+  tags:
+    STAGE: ${sls:stage}
+  tracing:
+    lambda: true # optional, enables tracing for all functions (can be true (true equals 'Active') 'Active' or 'PassThrough')
+  environment:
+    S3_BUCKET: bfe-energy-dashboard-raw-data-${sls:stage}
+    ENV: ${sls:stage}
+
+custom:
+  lambdaInsights:
+    defaultLambdaInsights: true #enables Lambda Insights for all functions
+  alerts:
+    topics:
+      alarm:
+        topic: ${self:service}-${opt:stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: bas@ti8m.ch # Change this to your email address
+          - protocol: email
+            endpoint: energiedashboard@ti8m.ch
+          - protocol: email
+            endpoint: yannik.inniger@ti8m.ch
+    alarms:
+      - functionErrors
+      - functionThrottles
+
+package:
+  exclude:
+    - node_modules/**
+
+layers:
+  common-layer:
+    path: dist/common-layer
+    name: ${sls:stage}-common-layer
+    description: Contains common source used in multiple functions
+    package:
+      include:
+        - dist/common-layer
+    compatibleRuntimes:
+      - nodejs16.x
+  node-modules-layer:
+    path: dist/node-modules-layer
+    name: ${sls:stage}-node-modules-layer
+    description: Contains all node modules used in functions
+    package:
+      include:
+        - dist/node-modules-layer
+    compatibleRuntimes:
+      - nodejs16.x
+
+functions:
+  api-dynamic-translations:
+    handler: dist/functions/api/dashboard/get-dynamic-translations/get-dynamic-translations.handler
+    name: ${sls:stage}-api-get-dynamic-translations
+    description: Provides API to access dynamic translations
+    events:
+      - httpApi:
+          method: GET
+          path: /api/dashboard/dynamic-translations
+      - httpApi:
+          method: GET
+          path: /api/dynamic-translations
+    package:
+      patterns:
+        - dist/functions/api/dashboard/get-dynamic-translations/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-ampel:
+    handler: dist/functions/api/dashboard/get-ampel/get-ampel.handler
+    name: ${sls:stage}-api-get-ampel
+    description: Provides API to access data for Ampel
+    events:
+      - httpApi:
+          method: GET
+          path: /api/dashboard/ampel
+      - httpApi:
+          method: GET
+          path: /api/ampel
+    package:
+      patterns:
+        - dist/functions/api/dashboard/get-ampel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-dashboard-strom:
+    handler: dist/functions/api/dashboard/get-dashboard-strom.handler
+    name: ${sls:stage}-api-get-dashboard-strom
+    description: Provides API to access data for Strom Data for dashboard
+    events:
+      - httpApi:
+          method: GET
+          path: /api/dashboard/strom
+    package:
+      patterns:
+        - dist/functions/api/dashboard/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-dashboard-gas:
+    handler: dist/functions/api/dashboard/get-dashboard-gas.handler
+    name: ${sls:stage}-api-get-dashboard-gas
+    description: Provides API to access data for Gas Data for dashboard
+    events:
+      - httpApi:
+          method: GET
+          path: /api/dashboard/gas
+    package:
+      patterns:
+        - dist/functions/api/dashboard/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-dashboard-spartipps-v2:
+    handler: dist/functions/api/dashboard/get-dashboard-spartipps-v2.handler
+    name: ${sls:stage}-api-get-dashboard-spartipps-v2
+    description: Provides API to access data for Spartipps for dashboard, version 2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/dashboard/v2/spartipps
+    package:
+      patterns:
+        - dist/functions/api/dashboard/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-dashboard-preise:
+    handler: dist/functions/api/dashboard/get-dashboard-preise.handler
+    name: ${sls:stage}-api-get-dashboard-preise
+    description: Provides API to access data for preise for dashboard
+    timeout: 25
+    events:
+      - httpApi:
+          method: GET
+          path: /api/dashboard/preise
+    package:
+      patterns:
+        - dist/functions/api/dashboard/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-dashboard-wetter:
+    handler: dist/functions/api/dashboard/get-dashboard-wetter.handler
+    name: ${sls:stage}-api-get-dashboard-wetter
+    description: Provides API to access data for wetter for dashboard
+    events:
+      - httpApi:
+          method: GET
+          path: /api/dashboard/wetter
+    package:
+      patterns:
+        - dist/functions/api/dashboard/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-dashboard-wetter-v2:
+    handler: dist/functions/api/dashboard/get-dashboard-wetter-v2.handler
+    name: ${sls:stage}-api-get-dashboard-wetter-v2
+    description: Provides API to access data for wetter for dashboard version 2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/dashboard/v2/wetter
+      - httpApi:
+          method: GET
+          path: /api/v2/dashboard/wetter
+    package:
+      patterns:
+        - dist/functions/api/dashboard/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer

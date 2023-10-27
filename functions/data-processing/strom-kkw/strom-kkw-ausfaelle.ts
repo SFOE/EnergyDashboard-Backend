@@ -21,10 +21,11 @@ export const handler = async (
 
 const processKkwAusfaelle = async () => {
     const records = await getCSVFileFromS3<StromKkwAusfallSourceV1>(
-        SourceFiles.STROM_KKW_PRODUKTION_AUSFAELLE_V1
+        SourceFiles.STROM_KKW_PRODUKTION_AUSFAELLE_V1,
+        'latin1'
     );
     const data: StromKkwAusfallV1[] = mapRecords(records);
 
-    await deleteAllStromKkwAusfaelle()
+    await deleteAllStromKkwAusfaelle();
     await saveStromKkwAusfaelle(data);
 };

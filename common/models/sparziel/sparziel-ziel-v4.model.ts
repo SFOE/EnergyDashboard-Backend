@@ -29,12 +29,22 @@ export const map = (record: SparzielZielSourceV4): SparzielZielV4 => {
     return {
         id: getUuid(),
         date: record.Datum,
-        kumulierteMonatlicheEinsparungGWh: parseInt(record.Kumulierte_Monatliche_Einsparung_GWh),
+        kumulierteMonatlicheEinsparungGWh: parseInt(
+            record.Kumulierte_Monatliche_Einsparung_GWh
+        ),
         sparzielGWh: parseInt(record.Sparziel_GWh),
-        standSparzielProzent: parseFloat(record.Stand_Sparziel_gemessen_Prozent),
-        standSparzielGeschaetztProzent: parseFloat(record.Stand_Sparziel_geschaetzt_Prozent),
-        kumulierteMonatlicheEinsparungWitterungsbereinigtGWh: parseInt(record.Kumulierte_Monatliche_Einsparung_witterungsbereinigt_GWh),
-        standSparzielGemessenWitterungsbereinigtProzent: parseFloat(record.Stand_Sparziel_gemessen_witterungsbereinigt_Prozent),
+        standSparzielProzent: parseFloat(
+            record.Stand_Sparziel_gemessen_Prozent
+        ),
+        standSparzielGeschaetztProzent: parseFloat(
+            record.Stand_Sparziel_geschaetzt_Prozent
+        ),
+        kumulierteMonatlicheEinsparungWitterungsbereinigtGWh: parseInt(
+            record.Kumulierte_Monatliche_Einsparung_witterungsbereinigt_GWh
+        ),
+        standSparzielGemessenWitterungsbereinigtProzent: parseFloat(
+            record.Stand_Sparziel_gemessen_witterungsbereinigt_Prozent
+        ),
         trend: Trend[record.Trend],
         trendRating: TrendRating[record.TrendRating]
     };

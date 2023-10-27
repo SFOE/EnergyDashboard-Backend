@@ -1,12 +1,13 @@
-import { roundOneDecimal } from '/opt/nodejs/utils/number.utils';
 import { createResponse } from '/opt/nodejs/api/api-requests';
 import { DashboardEntryApi } from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
 import { DashboardGasApi } from '/opt/nodejs/api/dashboard/dashboard-gas.api-model';
 import { findMostRecentFuellstandGasspeicherV2ForRegion } from '/opt/nodejs/db/gas/gas-fuellstand-gasspeicher-v2.db';
+import { fetchCurrentGasImportEuropaTrend } from '/opt/nodejs/db/gas/gas-import-europa-trend.db';
 import { findMostRecentGasImportHistoricalValuesV2 } from '/opt/nodejs/db/gas/gas-import-historical-values-v2.db';
 import { fetchCurrentGasImportKarte } from '/opt/nodejs/db/gas/gas-import-karte.db';
+import { fetchGasSparzielZielV5 } from '/opt/nodejs/db/gas/gas-sparziel-ziel-v5.db';
 import { FuellstandGasspeicherRegionV2 } from '/opt/nodejs/models/gas/gas-fuellstand-gasspeicher-v2.model';
-import { fetchGasSparzielZielV4 } from '/opt/nodejs/db/gas/gas-sparziel-ziel-v4.db';
+import { roundOneDecimal } from '/opt/nodejs/utils/number.utils';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -22,24 +23,28 @@ const getDataForGasDashboard = async (): Promise<DashboardGasApi> => {
     const promiseFuellstandNachbarlaender = getFuellstandNachbarlaender();
     const promiseNettoImport = getNettoImport();
     const promiseAktuelleGesamteinsparung = getAktuelleGesamteinsparung();
+    const promiseImportEuropa = getImportEuropa();
 
     const [
         aktuellerVerbrauch,
         fuellstandNachbarlaender,
         nettoImport,
-        aktuelleGesamteinsparung
+        aktuelleGesamteinsparung,
+        importEuropa
     ] = await Promise.all([
         promiseAktuellerVerbrauch,
         promiseFuellstandNachbarlaender,
         promiseNettoImport,
-        promiseAktuelleGesamteinsparung
+        promiseAktuelleGesamteinsparung,
+        promiseImportEuropa
     ]);
 
     return {
         aktuellerVerbrauch,
         fuellstandNachbarlaender,
         nettoImport,
-        aktuelleGesamteinsparung
+        aktuelleGesamteinsparung,
+        importEuropa
     };
 };
 
@@ -107,7 +112,7 @@ const getNettoImport = async (): Promise<DashboardEntryApi> => {
 };
 
 const getAktuelleGesamteinsparung = async (): Promise<DashboardEntryApi> => {
-    const currentValue = await fetchGasSparzielZielV4();
+    const currentValue = await fetchGasSparzielZielV5();
 
     console.log(
         `getAktuelleGesamteinsparung, currentValue: ${JSON.stringify(
@@ -120,12 +125,27 @@ const getAktuelleGesamteinsparung = async (): Promise<DashboardEntryApi> => {
     }
 
     return {
-        value: roundOneDecimal(
-            currentValue.standSparzielProzent +
-            currentValue.standSparzielGeschaetztProzent
-        ),
+        value: roundOneDecimal(currentValue.kumulierteEinsparungProzent),
         trend: currentValue.trend,
         trendRating: currentValue.trendRating,
+        date: currentValue.date
+    };
+};
+
+const getImportEuropa = async (): Promise<DashboardEntryApi> => {
+    const currentValue = await fetchCurrentGasImportEuropaTrend();
+    console.log(
+        `getImportEuropa, currentValue: ${JSON.stringify(currentValue)}`
+    );
+
+    if (!currentValue) {
+        return null;
+    }
+
+    return {
+        value: currentValue.value,
+        trend: currentValue.trend,
+        trendRating: currentValue.rating,
         date: currentValue.date
     };
 };

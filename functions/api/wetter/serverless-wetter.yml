@@ -1,0 +1,229 @@
+service: energy-dashboard-api-wetter
+
+plugins:
+  - '@shelf/serverless-simplify-default-exec-role-plugin'
+  - 'serverless-plugin-lambda-insights'
+  - 'serverless-plugin-aws-alerts'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 128
+  timeout: 25
+  stage: dev
+  region: eu-central-1
+  tags:
+    STAGE: ${sls:stage}
+  tracing:
+    lambda: true # optional, enables tracing for all functions (can be true (true equals 'Active') 'Active' or 'PassThrough')
+  environment:
+    S3_BUCKET: bfe-energy-dashboard-raw-data-${sls:stage}
+    ENV: ${sls:stage}
+
+custom:
+  lambdaInsights:
+    defaultLambdaInsights: true #enables Lambda Insights for all functions
+  alerts:
+    topics:
+      alarm:
+        topic: ${self:service}-${opt:stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: bas@ti8m.ch # Change this to your email address
+          - protocol: email
+            endpoint: energiedashboard@ti8m.ch
+          - protocol: email
+            endpoint: yannik.inniger@ti8m.ch
+    alarms:
+      - functionErrors
+      - functionThrottles
+
+package:
+  exclude:
+    - node_modules/**
+
+layers:
+  common-layer:
+    path: dist/common-layer
+    name: ${sls:stage}-common-layer
+    description: Contains common source used in multiple functions
+    package:
+      include:
+        - dist/common-layer
+    compatibleRuntimes:
+      - nodejs16.x
+  node-modules-layer:
+    path: dist/node-modules-layer
+    name: ${sls:stage}-node-modules-layer
+    description: Contains all node modules used in functions
+    package:
+      include:
+        - dist/node-modules-layer
+    compatibleRuntimes:
+      - nodejs16.x
+
+functions:
+  api-wetter-temperatur-aktuell:
+    handler: dist/functions/api/wetter/get-wetter-temperatur-aktuell.handler
+    name: ${sls:stage}-api-get-wetter-temperatur-aktuell
+    description: Provides API to access data for Wetter Temperatur Aktuell
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/temperatur-aktuell
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-temperatur-prognose:
+    handler: dist/functions/api/wetter/get-wetter-temperatur-prognose.handler
+    name: ${sls:stage}-api-get-wetter-temperatur-prognose
+    description: Provides API to access data for Wetter Temperatur Prognose
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/temperatur-prognose
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-temperatur-trend-v2:
+    handler: dist/functions/api/wetter/get-wetter-temperatur-trend-v2.handler
+    name: ${sls:stage}-api-get-wetter-temperatur-trend-v2
+    description: Provides API to access data for Wetter Temperatur Trend
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/v2/temperatur-trend
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-niederschlag-v2:
+    handler: dist/functions/api/wetter/get-wetter-niederschlag-v2.handler
+    name: ${sls:stage}-api-get-wetter-niederschlag-v2
+    description: Provides API to access data for Wetter Niederschlag V2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/v2/niederschlag
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-niederschlag-trend-v2:
+    handler: dist/functions/api/wetter/get-wetter-niederschlag-trend-v2.handler
+    name: ${sls:stage}-api-get-wetter-niederschlag-trend-v2
+    description: Provides API to access data for Wetter Niederschlag Trend
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/v2/niederschlag-trend
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-niederschlag-bilder-daten:
+    handler: dist/functions/api/wetter/get-wetter-niederschlag-bilder-daten.handler
+    name: ${sls:stage}-api-get-wetter-niederschlag-bilder-daten
+    description: Provides API to access data for Wetter Niederschlag Bilder Daten
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/niederschlag-bilder-daten
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-schneereserven:
+    handler: dist/functions/api/wetter/get-wetter-schneereserven.handler
+    name: ${sls:stage}-api-get-wetter-schneereserven
+    description: Provides API to access data for Wetter Schneereserven
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/schneereserven
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-schneereserven-trend:
+    handler: dist/functions/api/wetter/get-wetter-schneereserven-trend.handler
+    name: ${sls:stage}-api-get-wetter-schneereserven-trend
+    description: Provides API to access data for Wetter Schneereserven Trend
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/schneereserven-trend
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-heizgradtage-zeitreihe:
+    handler: dist/functions/api/wetter/get-wetter-heizgradtage-zeitreihe.handler
+    name: ${sls:stage}-api-get-wetter-heizgradtage-zeitreihe
+    description: Provides API to access data for Wetter Heizgradtage Zeitreihe
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/heizgradtage-zeitreihe
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-heizgradtage-tabelle-daten:
+    handler: dist/functions/api/wetter/get-wetter-heizgradtage-tabelle-daten.handler
+    name: ${sls:stage}-api-get-wetter-heizgradtage-tabelle-daten
+    description: Provides API to access data for Wetter Heizgradtage Tabelle Daten
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/heizgradtage-tabelle-daten
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-wetter-heizgradtage-trend:
+    handler: dist/functions/api/wetter/get-wetter-heizgradtage-trend.handler
+    name: ${sls:stage}-api-get-wetter-heizgradtage-trend
+    description: Provides API to access data for Wetter Heizgradtage Trend
+    events:
+      - httpApi:
+          method: GET
+          path: /api/wetter/heizgradtage-trend
+    package:
+      patterns:
+        - dist/functions/api/wetter/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer

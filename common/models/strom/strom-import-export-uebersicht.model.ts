@@ -7,19 +7,25 @@ export interface StromImportExportUebersichtSource {
     Datum: string;
     Import_GWh: string;
     Export_GWh: string;
+    Nettoimport_GWh: string;
     Trend_Import: string;
     Trend_Export: string;
+    Trend_Nettoimport: string;
     TrendRating_Import: string;
     TrendRating_Export: string;
+    TrendRating_Nettoimport: string;
 }
 
 export interface StromImportExportUebersicht extends BaseModel, DateModel {
     importGWh: number;
     exportGWh: number;
+    nettoimportGWh: number;
     trendImport: Trend;
     trendRatingImport: TrendRating;
     trendExport: Trend;
     trendRatingExport: TrendRating;
+    trendNettoimport: Trend;
+    trendRatingNettoimport: TrendRating;
 }
 
 export const map = (
@@ -35,8 +41,11 @@ const mapRecord = (
     date: record.Datum,
     importGWh: parseFloat(record.Import_GWh),
     exportGWh: parseFloat(record.Export_GWh),
+    nettoimportGWh: parseFloat(record.Nettoimport_GWh),
     trendImport: Trend[record.Trend_Import],
     trendRatingImport: TrendRating[record.TrendRating_Import],
     trendExport: Trend[record.Trend_Export],
-    trendRatingExport: TrendRating[record.TrendRating_Export]
+    trendRatingExport: TrendRating[record.TrendRating_Export],
+    trendNettoimport: Trend[record.Trend_Nettoimport],
+    trendRatingNettoimport: TrendRating[record.TrendRating_Nettoimport]
 });

@@ -9,3 +9,8 @@ mv dist/common/* dist/common-layer/nodejs/
 # Copy to deployment folders
 cp -r dist functions/data-processing/dist
 cp -r dist functions/api/dist
+cp -r dist functions/api/dashboard/dist
+cp -r dist functions/api/gas/dist
+cp -r dist functions/api/preise/dist
+cp -r dist functions/api/strom/dist
+cp -r dist functions/api/wetter/dist

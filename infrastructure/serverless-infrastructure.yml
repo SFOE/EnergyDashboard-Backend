@@ -1,0 +1,311 @@
+service: energy-dashboard-backend-infrastructure
+
+plugins:
+  - '@shelf/serverless-simplify-default-exec-role-plugin'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 128
+  timeout: 120
+  stage: dev
+  region: eu-central-1
+  tags:
+    STAGE: ${sls:stage}
+  environment:
+    ENV: ${sls:stage}
+
+resources: # CloudFormation template syntax from here on.
+  Transform: AWS::Serverless-2016-10-31
+  Resources:
+    # Default Template for DynamoDB Table
+    DynamoDBTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        PrimaryKey:
+          Name: id
+          Type: String
+        Tags:
+          STAGE: ${sls:stage}
+
+    # Tables Strom
+    StromFuellungsgradSpeicherseenV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-fuellungsgrad-speicherseen-v2
+    StromImportExportHistoricalValuesV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-import-export-historical-values-v2
+    StromImportExportNettoTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-import-export-netto
+    StromImportExportUebersichtTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-import-export-uebersicht
+    StromProduktionsmixTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-produktionsmix
+    StromProduktionImportVerbrauchTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-produktion-import-verbrauch
+    StromVerbrauchLandesverbrauchMitPrognoseV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-verbrauch-landesverbrauch-mit-prognose-v2
+    StromVerbrauchEndverbrauchV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-verbrauch-endverbrauch-v2
+    StromVerbrauchLandesverbrauchVergleichV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-verbrauch-landesverbrauch-vergleich-v2
+    StromSparzielZielV4Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-ziel-v4
+    StromSparzielZielV5Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-ziel-v5
+    StromSparzielAktuelleEinsparungV4Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-aktuelle-einsparung-v4
+    StromSparzielAktuelleEinsparungV5Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-aktuelle-einsparung-v5
+    StromSparzielEinsparungProMonatKundengruppeV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-einsparung-pro-monat-kundengruppe-v2
+    StromSparzielEinsparungAktuellerMonatKundengruppeTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-einsparung-aktueller-monat-kundengruppe
+    StromSparzielZielAktuellerMonatKundengruppeTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-ziel-aktueller-monat-kundengruppe
+    StromSparziel5ProzentPeakHTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-5-prozent-peak-h
+    StromSparziel5ProzentEinsparungenTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-5-prozent-einsparungen
+    StromSparziel5ProzentEinsparungenTableV2:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-sparziel-5-prozent-einsparungen-v2
+    StromSparzielKKWProduktionCHV1Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-kkw-produktion-ch-v1
+    StromSparzielKKWProduktionFRV1Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-kkw-produktion-fr-v1
+
+    # Tables Strom without default values
+    StromKkwAusfaelleTablePatch1:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-kkw-ausfaelle-v1-p1
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: country
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: country-index
+            Projection:
+              ProjectionType: ALL
+            KeySchema:
+              - AttributeName: country
+                KeyType: HASH
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+    StromKkwVerfuegbarkeitTablePatch1:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${sls:stage}-strom-kkw-verfuegbarkeit-p1
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: country
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: country-index
+            Projection:
+              ProjectionType: ALL
+            KeySchema:
+              - AttributeName: country
+                KeyType: HASH
+        Tags:
+          - Key: STAGE
+            Value: ${sls:stage}
+
+    # Tables Gas
+    GasFuellstandGasspeicherV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-fuellstand-gasspeicher-v2
+    GasImportKarteTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-import-karte
+    GasImportHistoricalValuesV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-import-historical-values-v2
+    GasSparzielZielV4Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-sparziel-ziel-v4
+    GasSparzielZielV5Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-sparziel-ziel-v5
+    GasSparzielAktuelleEinsparungV4Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-sparziel-aktuelle-einsparung-v4
+    GasSparzielAktuelleEinsparungV5Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-sparziel-aktuelle-einsparung-v5
+    GasImportEuropaJaehrlichTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-import-europa-jaehrlich
+    GasImportEuropaTaeglichTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-import-europa-taeglich
+    GasImportEuropaTrendTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-gas-import-europa-trend
+
+    # Tables Preise
+    PreiseStromBoerseTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-strom-boerse
+    PreiseStromEndverbrauchTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-strom-endverbrauch
+    PreiseFuturesStromTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-strom-futures
+    PreiseGasDayaheadTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-gas-dayahead
+    PreiseGasEndverbrauchTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-gas-endverbrauch
+    PreiseFuturesGasTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-gas-futures
+    PreiseTreibstoffBleifreiTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-treibstoff-bleifrei
+    PreiseTreibstoffDieselTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-treibstoff-diesel
+    PreiseHeizoelEntwicklungTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-heizoel-entwicklung
+    PreiseBrennholzEndverbrauchTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-brennholz-endverbrauch
+    PreiseFernwaermeEndverbrauchTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-fernwaerme-endverbrauch
+    PreiseStromEuropaTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-strom-europa
+    PreiseStromEuropaTrendTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-preise-strom-europa-trend
+
+    # Tables Wetter
+    WetterTemperaturAktuellTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-temperatur-aktuell
+    WetterTemperaturPrognoseTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-temperatur-prognose
+    WetterTemperaturTrendV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-temperatur-trend-v2
+    WetterNiederschlagV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-niederschlag-v2
+    WetterNiederschlagBilderDatenTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-niederschlag-bilder-daten
+    WetterSchneerservenTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-schneereserven
+    WetterHeizgradtageZeitreiheTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-heizgradtage-zeitreihe
+    WetterHeizgradtageTabelleDatenTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-heizgradtage-tabelle-daten
+    WetterHeizgradtageTrendTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-wetter-heizgradtage-trend
+
+    # Tables Overview
+    DynamicTranslationsTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-dynamic-translations
+    AmpelTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-ampel
+    SpartippsV2Table:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-spartipps-v2

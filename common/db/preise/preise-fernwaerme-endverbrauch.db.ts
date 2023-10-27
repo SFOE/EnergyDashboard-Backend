@@ -15,7 +15,7 @@ export const fetchAllPreiseFernwaermeEndverbrauch = async (): Promise<
     return fetchAll(tableName);
 };
 
-export const fetchCurrentFernwaermeEndverbrauch =
+export const fetchCurrentPreiseFernwaermeEndverbrauch =
     async (): Promise<PreiseFernwaermeEndverbrauch> => {
         const items = await fetchAllPreiseFernwaermeEndverbrauch();
         return getMostRecentEntry(items);

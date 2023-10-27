@@ -1,6 +1,6 @@
 import { DateModel } from '/opt/nodejs/models/base/date.model';
-import { dateSortFn } from '/opt/nodejs/utils/sort.utils';
 import { StromProduktionsMix } from '/opt/nodejs/models/strom/strom-produktionsmix.model';
+import { getMostRecentDate } from '/opt/nodejs/utils/date.utils';
 
 export interface StromProduktionsMixApi extends DateModel {
     [year: number]: StromProduktionsMixEntryApi;
@@ -25,7 +25,7 @@ export interface StromProduktionsMixEntryApi {
 export const mapToApiModel = (
     entries: StromProduktionsMix[]
 ): StromProduktionsMixApi => {
-    const date = getCurrentDate(entries);
+    const date = getMostRecentDate(entries);
     const stromProduktionsMix: StromProduktionsMixApi = {
         date: date
     };
@@ -36,12 +36,6 @@ export const mapToApiModel = (
         stromProduktionsMix[year] = mappedEntry;
     });
     return stromProduktionsMix;
-};
-
-const getCurrentDate = (entries: StromProduktionsMix[]): string => {
-    const sortedEntries = entries.sort(dateSortFn);
-    const currentEntry = sortedEntries[sortedEntries.length - 1];
-    return currentEntry.date;
 };
 
 const mapEntry = (entry: StromProduktionsMix): StromProduktionsMixEntryApi => ({

@@ -1,6 +1,6 @@
 import { DateModel } from '/opt/nodejs/models/base/date.model';
 import { FiveYearWithDiffStatisticsModel } from '/opt/nodejs/models/base/statistics.model';
-import { getYesterday, isDateBeforeOrEqualsToday, isSameDate } from '/opt/nodejs/utils/date.utils';
+import { findEntryByDate, getYesterday, isDateBeforeOrEqualsToday } from '/opt/nodejs/utils/date.utils';
 import {
     StromVerbrauchLandesverbrauchMitPrognoseV2
 } from '/opt/nodejs/models/strom/strom-verbrauch-landesverbrauch-mit-prognose-v2.model';
@@ -46,21 +46,14 @@ const getEntryYesterday = (
     records: StromVerbrauchLandesverbrauchMitPrognoseV2[]
 ) => {
     const yesterday = getYesterday();
-    return findEntry(records, yesterday);
+    return findEntryByDate(records, yesterday);
 };
 
 const getEntryInFiveDays = (
     records: StromVerbrauchLandesverbrauchMitPrognoseV2[]
 ) => {
     const date = new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000);
-    return findEntry(records, date);
-};
-
-const findEntry = (
-    records: StromVerbrauchLandesverbrauchMitPrognoseV2[],
-    date: Date
-): StromVerbrauchLandesverbrauchMitPrognoseV2 => {
-    return records.find((entry) => isSameDate(new Date(entry.date), date));
+    return findEntryByDate(records, date);
 };
 
 const mapCurrentEntry = (

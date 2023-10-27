@@ -1,0 +1,394 @@
+service: energy-dashboard-api-strom
+
+plugins:
+  - '@shelf/serverless-simplify-default-exec-role-plugin'
+  - 'serverless-plugin-lambda-insights'
+  - 'serverless-plugin-aws-alerts'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 128
+  timeout: 25
+  stage: dev
+  region: eu-central-1
+  tags:
+    STAGE: ${sls:stage}
+  tracing:
+    lambda: true # optional, enables tracing for all functions (can be true (true equals 'Active') 'Active' or 'PassThrough')
+  environment:
+    S3_BUCKET: bfe-energy-dashboard-raw-data-${sls:stage}
+    ENV: ${sls:stage}
+
+custom:
+  lambdaInsights:
+    defaultLambdaInsights: true #enables Lambda Insights for all functions
+  alerts:
+    topics:
+      alarm:
+        topic: ${self:service}-${opt:stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: bas@ti8m.ch # Change this to your email address
+          - protocol: email
+            endpoint: energiedashboard@ti8m.ch
+          - protocol: email
+            endpoint: yannik.inniger@ti8m.ch
+    alarms:
+      - functionErrors
+      - functionThrottles
+
+package:
+  exclude:
+    - node_modules/**
+
+layers:
+  common-layer:
+    path: dist/common-layer
+    name: ${sls:stage}-common-layer
+    description: Contains common source used in multiple functions
+    package:
+      include:
+        - dist/common-layer
+    compatibleRuntimes:
+      - nodejs16.x
+  node-modules-layer:
+    path: dist/node-modules-layer
+    name: ${sls:stage}-node-modules-layer
+    description: Contains all node modules used in functions
+    package:
+      include:
+        - dist/node-modules-layer
+    compatibleRuntimes:
+      - nodejs16.x
+
+functions:
+  api-fuellungsgrad-speicherseen-v2:
+    handler: dist/functions/api/strom/get-strom-fuellungsgrad-speicherseen/get-strom-fuellungsgrad-speicherseen-v2.handler
+    name: ${sls:stage}-api-get-strom-fuellungsgrad-speicherseen-v2
+    description: Provides API to access data for fuellungsgrad of Speicherseen, version 2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v2/fuellungsgrad-speicherseen
+    package:
+      patterns:
+        - dist/functions/api/strom/get-strom-fuellungsgrad-speicherseen/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-import-export-historical-values-v2:
+    handler: dist/functions/api/strom/strom-import-export/get-strom-import-export-historical-values-v2.handler
+    name: ${sls:stage}-api-get-strom-import-export-historical-values-v2
+    description: Provides API to access data for historical values of Strom Import/Export Version 2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v2/strom-import-export/historical-values
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-import-export/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-import-export-netto:
+    handler: dist/functions/api/strom/strom-import-export/get-strom-import-export-netto.handler
+    name: ${sls:stage}-api-get-strom-import-export-netto
+    description: Provides API to access data for netto values of Strom Import/Export
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-import-export/netto
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-import-export/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-produktionsmix:
+    handler: dist/functions/api/strom/strom-produktion/get-strom-produktionsmix.handler
+    name: ${sls:stage}-api-get-strom-produktionsmix
+    description: Provides API to access data for Strom Produktionsmix
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-produktionsmix
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-produktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-produktion-import-verbrauch:
+    handler: dist/functions/api/strom/strom-produktion/get-strom-produktion-import-verbrauch.handler
+    name: ${sls:stage}-api-get-strom-produktion-import-verbrauch
+    description: Provides API to access data for Strom Produktion, Import & Verbrauch
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-produktion-import-verbrauch
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-produktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-verbrauch-landesverbrauch-mit-prognose-v2:
+    handler: dist/functions/api/strom/strom-verbrauch/get-strom-verbrauch-landesverbrauch-mit-prognose-v2.handler
+    name: ${sls:stage}-api-get-strom-verbrauch-landesverbrauch-mit-prognose-v2
+    description: Provides API to access data for Strom Verbrauch Landesverbrauch mit Prognose
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v2/strom-verbrauch/landesverbrauch-mit-prognose
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-verbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-verbrauch-endverbrauch-v2:
+    handler: dist/functions/api/strom/strom-verbrauch/get-strom-verbrauch-endverbrauch-v2.handler
+    name: ${sls:stage}-api-get-strom-verbrauch-endverbrauch-v2
+    description: Provides API to access data for Strom Verbrauch Endverbrauch Version 2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v2/strom-verbrauch/endverbrauch
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-verbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-verbrauch-landesverbrauch-vergleich-v2:
+    handler: dist/functions/api/strom/strom-verbrauch/get-strom-verbrauch-landesverbrauch-vergleich-v2.handler
+    name: ${sls:stage}-api-get-strom-verbrauch-landesverbrauch-vergleich-v2
+    description: Provides API to access data for Strom Verbrauch Landesverbrauch Vergleich Version 2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v2/strom-verbrauch/landesverbrauch-vergleich
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-verbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-ziel-v4:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-ziel-v4.handler
+    name: ${sls:stage}-api-get-strom-sparziel-ziel-v4
+    description: Provides API to access data for Strom Sparziel Ziel V4
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v4/strom-sparziel/ziel
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-ziel-v5:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-ziel-v5.handler
+    name: ${sls:stage}-api-get-strom-sparziel-ziel-v5
+    description: Provides API to access data for Strom Sparziel Ziel V5
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v5/strom-sparziel/ziel
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-aktuelle-einsparung-v4:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-aktuelle-einsparung-v4.handler
+    name: ${sls:stage}-api-get-strom-sparziel-aktuelle-einsparung-v4
+    description: Provides API to access data for Strom Sparziel Aktuelle Einsparung Version 4
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v4/strom-sparziel/aktuelle-einsparung
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-aktuelle-einsparung-v5:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-aktuelle-einsparung-v5.handler
+    name: ${sls:stage}-api-get-strom-sparziel-aktuelle-einsparung-v5
+    description: Provides API to access data for Strom Sparziel Aktuelle Einsparung Version 5
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v5/strom-sparziel/aktuelle-einsparung
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-einsparung-aktueller-monat-kundengruppe:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-einsparung-aktueller-monat-kundengruppe.handler
+    name: ${sls:stage}-api-get-strom-sparziel-aktueller-monat-kundengruppe
+    description: Provides API to access data for Strom Sparziel Einsparung Aktueller Monat Kundengruppe
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-sparziel/einsparung-aktueller-monat-kundengruppe
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-einsparung-pro-monat-kundengruppe-v2:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-einsparung-pro-monat-kundengruppe-v2.handler
+    name: ${sls:stage}-api-get-strom-sparziel-pro-monat-kundengruppe-v2
+    description: Provides API to access data for Strom Sparziel Einsparung Pro Monat Kundengruppe V2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v2/strom-sparziel/einsparung-pro-monat-kundengruppe
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-ziel-aktueller-monat-kundengruppe:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-ziel-aktueller-monat-kundengruppe.handler
+    name: ${sls:stage}-api-get-strom-sparziel-ziel-aktueller-monat-kundengruppe
+    description: Provides API to access data for Strom Sparziel Ziel Aktueller Monat Kundengruppe
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-sparziel/ziel-aktueller-monat-kundengruppe
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-5-prozent-peak-h:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-5-prozent-peak-h.handler
+    name: ${sls:stage}-api-get-strom-sparziel-5-prozent-peak-h
+    description: Provides API to access data for Strom Sparziel 5 Prozent Peak h
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-sparziel/5-percent-peak-h
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-5-prozent-einsparungen:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-5-prozent-einsparungen.handler
+    name: ${sls:stage}-api-get-strom-sparziel-5-prozent-einsparungen
+    description: Provides API to access data for Strom Sparziel 5 Prozent Einsparungen
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-sparziel/5-percent-einsparungen
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-sparziel-5-prozent-einsparungen-v2:
+    handler: dist/functions/api/strom/strom-sparziel/get-strom-sparziel-5-prozent-einsparungen-v2.handler
+    name: ${sls:stage}-api-get-strom-sparziel-5-prozent-einsparungen-v2
+    description: Provides API to access data for Strom Sparziel 5 Prozent Einsparungen V2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/v2/strom-sparziel/5-percent-einsparungen
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-kkw-produktion-ch:
+    handler: dist/functions/api/strom/strom-kkw/get-strom-kkw-produktion-ch.handler
+    name: ${sls:stage}-api-get-strom-kkw-produktion-ch
+    description: Provides API to access data for Strom KKW Produktion for CH
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-kkw/produktion-ch
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-kkw/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-kkw-produktion-fr:
+    handler: dist/functions/api/strom/strom-kkw/get-strom-kkw-produktion-fr.handler
+    name: ${sls:stage}-api-get-strom-kkw-produktion-fr
+    description: Provides API to access data for Strom KKW Produktion for FR
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-kkw/produktion-fr
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-kkw/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-kkw-verfuegbarkeit-ch:
+    handler: dist/functions/api/strom/strom-kkw/get-strom-kkw-verfuegbarkeit-ch.handler
+    name: ${sls:stage}-api-get-strom-kkw-verfuegbarkeit-ch
+    description: Provides API to access data for Strom KKW Verfuegbarkeit for CH
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-kkw/verfuegbarkeit-ch
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-kkw/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-kkw-verfuegbarkeit-fr:
+    handler: dist/functions/api/strom/strom-kkw/get-strom-kkw-verfuegbarkeit-fr.handler
+    name: ${sls:stage}-api-get-strom-kkw-verfuegbarkeit-fr
+    description: Provides API to access data for Strom KKW Verfuegbarkeit for FR
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-kkw/verfuegbarkeit-fr
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-kkw/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer

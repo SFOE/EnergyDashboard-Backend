@@ -5,7 +5,7 @@ import {
 } from '/opt/nodejs/models/strom/strom-verbrauch-landesverbrauch-mit-prognose-v2.model';
 import { SourceFiles } from '/opt/nodejs/source-files';
 import { withEnvPrefix } from '/opt/nodejs/utils/env.utils';
-import { dateSortFn } from '/opt/nodejs/utils/sort.utils';
+import { findEntryByDate } from '/opt/nodejs/utils/date.utils';
 
 const tableName = withEnvPrefix(DynamoDBTables[SourceFiles.STROM_VERBRAUCH_LANDESVERBRAUCH_MIT_PROGNOSE_V2]);
 
@@ -13,12 +13,11 @@ export const fetchAllStromVerbrauchLandesverbrauchMitPrognoseV2 = async (): Prom
     return fetchAll(tableName);
 };
 
-export const fetchMostRecentStromVerbrauchLandesverbrauchMitPrognoseV2 = async (): Promise<StromVerbrauchLandesverbrauchMitPrognoseV2> => {
+export const fetchStromVerbrauchLandesverbrauchMitPrognoseV2ByDate = async (date: Date): Promise<StromVerbrauchLandesverbrauchMitPrognoseV2> => {
     const allEntries = await fetchAll<StromVerbrauchLandesverbrauchMitPrognoseV2>(
         tableName
     );
-    allEntries.sort(dateSortFn);
-    return allEntries[allEntries.length - 1];
+    return findEntryByDate(allEntries, date);
 };
 
 export const saveAllStromVerbrauchLandesverbrauchMitPrognoseV2 = async (data: StromVerbrauchLandesverbrauchMitPrognoseV2[]) => {

@@ -5,10 +5,11 @@ import {
     DashboardEntryWithoutTrendApi
 } from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
 import { DashboardWetterApiV2 } from '/opt/nodejs/api/dashboard/dashboard-wetter.api-model-v2';
+import { fetchCurrentWetterHeizgradtageTrend } from '/opt/nodejs/db/wetter/wetter-heizgradtage-trend.db';
+import { fetchMostRecentWetterNiederschlagV2 } from '/opt/nodejs/db/wetter/wetter-niederschlag-v2.db';
+import { fetchMostRecentWetterSchneereserven } from '/opt/nodejs/db/wetter/wetter-schneereserven.db';
 import { fetchMostRecentWetterTemperaturAktuellSchweiz } from '/opt/nodejs/db/wetter/wetter-temperatur-aktuell.db';
 import { fetchWetterTemperaturTrendV2 } from '/opt/nodejs/db/wetter/wetter-temperatur-trend-v2.db';
-import { fetchMostRecentWetterSchneereserven } from '/opt/nodejs/db/wetter/wetter-schneereserven.db';
-import { fetchMostRecentWetterNiederschlagV2 } from '/opt/nodejs/db/wetter/wetter-niederschlag-v2.db';
 
 export const handler = async (event): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -24,30 +25,33 @@ const getDataForWetterDashboard = async (): Promise<DashboardWetterApiV2> => {
     const promisePrognoseTemperatur = getPrognoseTemperatur();
     const promiseSchneereserven = getSchneereserven();
     const promiseNiederschlaege = getNiederschlaege();
+    const promiseHeizgradtage = getHeizgradtage();
 
     const [
         aktuelleTemperatur,
         prognoseTemperatur,
         schneereserven,
-        niederschlaege] = await Promise.all([
+        niederschlaege,
+        heizgradtage
+    ] = await Promise.all([
         promiseAktuelleTemperatur,
         promisePrognoseTemperatur,
         promiseSchneereserven,
-        promiseNiederschlaege
+        promiseNiederschlaege,
+        promiseHeizgradtage
     ]);
 
     return {
         aktuelleTemperatur,
         prognoseTemperatur,
         schneereserven,
-        niederschlaege
+        niederschlaege,
+        heizgradtage
     };
 };
 
 const getAktuelleTemperatur =
     async (): Promise<DashboardEntryWithoutTrendApi> => {
-        console.log(`getAktuelleTemperatur`);
-
         const currentValue =
             await fetchMostRecentWetterTemperaturAktuellSchweiz();
         console.log(
@@ -65,29 +69,32 @@ const getAktuelleTemperatur =
         };
     };
 
-const getPrognoseTemperatur = async (): Promise<DashboardEntryWithoutDateApi> => {
-    console.log(`getPrognoseTemperatur`);
+const getPrognoseTemperatur =
+    async (): Promise<DashboardEntryWithoutDateApi> => {
+        const trend = await fetchWetterTemperaturTrendV2();
+        console.log(
+            `getPrognoseTemperatur, prognoseTemperatur: ${JSON.stringify(
+                trend
+            )}`
+        );
 
-    const trend = await fetchWetterTemperaturTrendV2();
-    console.log(`getPrognoseTemperatur, prognoseTemperatur: ${JSON.stringify(trend)}`);
+        if (!trend) {
+            return null;
+        }
 
-    if (!trend) {
-        return null;
-    }
-
-    return {
-        trend: trend.trend,
-        trendRating: trend.trendRating,
-        value: trend.averageTemperature
+        return {
+            trend: trend.trend,
+            trendRating: trend.trendRating,
+            value: trend.averageTemperature
+        };
     };
-};
 
 const getNiederschlaege = async (): Promise<DashboardEntryApi> => {
-    console.log(`getNiederschlag`);
-
     const niederschlaege = await fetchMostRecentWetterNiederschlagV2();
 
-    console.log(`getNiederschlag, niederschlaege: ${JSON.stringify(niederschlaege)}`);
+    console.log(
+        `getNiederschlag, niederschlaege: ${JSON.stringify(niederschlaege)}`
+    );
 
     if (!niederschlaege) {
         return null;
@@ -102,11 +109,11 @@ const getNiederschlaege = async (): Promise<DashboardEntryApi> => {
 };
 
 const getSchneereserven = async (): Promise<DashboardEntryApi> => {
-    console.log(`getSchneereserven`);
-
     const schneereserven = await fetchMostRecentWetterSchneereserven();
 
-    console.log(`getSchneereserven, schneerserven: ${JSON.stringify(schneereserven)}`);
+    console.log(
+        `getSchneereserven, schneerserven: ${JSON.stringify(schneereserven)}`
+    );
 
     if (!schneereserven) {
         return null;
@@ -117,5 +124,21 @@ const getSchneereserven = async (): Promise<DashboardEntryApi> => {
         date: schneereserven.date,
         trend: schneereserven.trend,
         trendRating: schneereserven.trendRating
+    };
+};
+
+const getHeizgradtage = async (): Promise<DashboardEntryApi> => {
+    const hgtTrend = await fetchCurrentWetterHeizgradtageTrend();
+    console.log(`getHeizgradtage, heizgradtage: ${JSON.stringify(hgtTrend)}`);
+
+    if (!hgtTrend) {
+        return null;
+    }
+
+    return {
+        value: hgtTrend.messungPrognoseKumulativMittelwert,
+        date: hgtTrend.date,
+        trend: hgtTrend.trend,
+        trendRating: hgtTrend.rating
     };
 };

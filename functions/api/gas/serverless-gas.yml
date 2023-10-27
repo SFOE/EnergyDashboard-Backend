@@ -1,0 +1,214 @@
+service: energy-dashboard-api-gas
+
+plugins:
+  - '@shelf/serverless-simplify-default-exec-role-plugin'
+  - 'serverless-plugin-lambda-insights'
+  - 'serverless-plugin-aws-alerts'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 128
+  timeout: 25
+  stage: dev
+  region: eu-central-1
+  tags:
+    STAGE: ${sls:stage}
+  tracing:
+    lambda: true # optional, enables tracing for all functions (can be true (true equals 'Active') 'Active' or 'PassThrough')
+  environment:
+    S3_BUCKET: bfe-energy-dashboard-raw-data-${sls:stage}
+    ENV: ${sls:stage}
+
+custom:
+  lambdaInsights:
+    defaultLambdaInsights: true #enables Lambda Insights for all functions
+  alerts:
+    topics:
+      alarm:
+        topic: ${self:service}-${opt:stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: bas@ti8m.ch # Change this to your email address
+          - protocol: email
+            endpoint: energiedashboard@ti8m.ch
+          - protocol: email
+            endpoint: yannik.inniger@ti8m.ch
+    alarms:
+      - functionErrors
+      - functionThrottles
+
+package:
+  exclude:
+    - node_modules/**
+
+layers:
+  common-layer:
+    path: dist/common-layer
+    name: ${sls:stage}-common-layer
+    description: Contains common source used in multiple functions
+    package:
+      include:
+        - dist/common-layer
+    compatibleRuntimes:
+      - nodejs16.x
+  node-modules-layer:
+    path: dist/node-modules-layer
+    name: ${sls:stage}-node-modules-layer
+    description: Contains all node modules used in functions
+    package:
+      include:
+        - dist/node-modules-layer
+    compatibleRuntimes:
+      - nodejs16.x
+
+functions:
+  api-fuellstand-gasspeicher-v2:
+    handler: dist/functions/api/gas/get-fuellstand-gasspeicher/get-fuellstand-gasspeicher-v2.handler
+    name: ${sls:stage}-api-get-fuellstand-gasspeicher-v2
+    description: Provides API to access data for Fuellstand of Gasspeicher, Version 2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/v2/fuellstand-gasspeicher
+    package:
+      patterns:
+        - dist/functions/api/gas/get-fuellstand-gasspeicher/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-import-karte:
+    handler: dist/functions/api/gas/gas-import/get-gas-import-karte.handler
+    name: ${sls:stage}-api-get-gas-import-karte
+    description: Provides API to access data for Gas Import Karte
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/gas-import/karte
+    package:
+      patterns:
+        - dist/functions/api/gas/gas-import/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-import-historical-values-v2:
+    handler: dist/functions/api/gas/gas-import/get-gas-import-historical-values-v2.handler
+    name: ${sls:stage}-api-get-gas-import-historical-values-v2
+    description: Provides API to access data for Gas Import Historical Values Version 2
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/v2/gas-import/historical-values
+    package:
+      patterns:
+        - dist/functions/api/gas/gas-import/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-sparziel-ziel-v4:
+    handler: dist/functions/api/gas/gas-sparziel/get-gas-sparziel-ziel-v4.handler
+    name: ${sls:stage}-api-get-gas-sparziel-ziel-v4
+    description: Provides API to access data for Gas Sparziel Ziel Version 4
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/v4/gas-sparziel/ziel
+    package:
+      patterns:
+        - dist/functions/api/gas/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-sparziel-ziel-v5:
+    handler: dist/functions/api/gas/gas-sparziel/get-gas-sparziel-ziel-v5.handler
+    name: ${sls:stage}-api-get-gas-sparziel-ziel-v5
+    description: Provides API to access data for Gas Sparziel Ziel Version 5
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/v5/gas-sparziel/ziel
+    package:
+      patterns:
+        - dist/functions/api/gas/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-sparziel-aktuelle-einsparung-v4:
+    handler: dist/functions/api/gas/gas-sparziel/get-gas-sparziel-aktuelle-einsparung-v4.handler
+    name: ${sls:stage}-api-get-gas-sparziel-aktuelle-einsparung-v4
+    description: Provides API to access data for Gas Sparziel Aktuelle Einsparung Version 4
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/v4/gas-sparziel/aktuelle-einsparung
+    package:
+      patterns:
+        - dist/functions/api/gas/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-sparziel-aktuelle-einsparung-v5:
+    handler: dist/functions/api/gas/gas-sparziel/get-gas-sparziel-aktuelle-einsparung-v5.handler
+    name: ${sls:stage}-api-get-gas-sparziel-aktuelle-einsparung-v5
+    description: Provides API to access data for Gas Sparziel Aktuelle Einsparung Version 5
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/v5/gas-sparziel/aktuelle-einsparung
+    package:
+      patterns:
+        - dist/functions/api/gas/gas-sparziel/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-import-europa-taeglich:
+    handler: dist/functions/api/gas/gas-import-europa/get-gas-import-europa-taeglich.handler
+    name: ${sls:stage}-api-get-gas-import-europa-taeglich
+    description: Provides API to access data for Gas Import Europa Taeglich
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/gas-import-europa/taeglich
+    package:
+      patterns:
+        - dist/functions/api/gas/gas-import-europa/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-import-europa-jaehrlich:
+    handler: dist/functions/api/gas/gas-import-europa/get-gas-import-europa-jaehrlich.handler
+    name: ${sls:stage}-api-get-gas-import-europa-jaehrlich
+    description: Provides API to access data for Gas Import Europa Jaehrlich
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/gas-import-europa/jaehrlich
+    package:
+      patterns:
+        - dist/functions/api/gas/gas-import-europa/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-gas-import-europa-trend:
+    handler: dist/functions/api/gas/gas-import-europa/get-gas-import-europa-trend.handler
+    name: ${sls:stage}-api-get-gas-import-europa-trend
+    description: Provides API to access data for Gas Import Europa Trend
+    events:
+      - httpApi:
+          method: GET
+          path: /api/gas/gas-import-europa/trend
+    package:
+      patterns:
+        - dist/functions/api/gas/gasgas-import-europa/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
