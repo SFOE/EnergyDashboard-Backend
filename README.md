@@ -21,7 +21,7 @@ In order to add new lambda functions we need to do the following tasks:
   is added to the `source-files.ts`, so that the lambda function which gets triggered by AWS can properly route the file
   to the new function.
 - If you need a new db table for the data make sure to add the entry to `db-tables.ts`. Also make sure to add the
-  database in `serverless-data-processing.yml`
+  database in `serverless-data-processing.yml` and in `infrastructure/serverless-infrastructure.yml`.
 
 ## Versioning of source files and APIs
 If there are breaking changes in the source files or APIs we have the following versioning scheme:

@@ -8,6 +8,16 @@ export enum SourceFiles {
     STROM_VERBRAUCH_LANDESVERBRAUCH_MIT_PROGNOSE_V2 = 'kpi-strom-1_landesverbrauch_SG_V2.csv',
     STROM_VERBRAUCH_ENDVERBRAUCH_V2 = 'kpi-strom-1_landesverbrauch_endverbrauch_SG_V2.csv',
     STROM_VERBRAUCH_LANDESVERBRAUCH_VERGLEICH_V2 = 'kpi-strom-1_landesverbrauch_BFE-SG-ENTSOE_V2.csv',
+    STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_BASIS = 'kpi-energie-1_bruttoenergieverbrauch_Basis.csv',
+    STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_WWB = 'kpi-energie-1_bruttoenergieverbrauch_WWB.csv',
+    STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_ZERO_A = 'kpi-energie-1_bruttoenergieverbrauch_zeroA.csv',
+    STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_ZERO_B = 'kpi-energie-1_bruttoenergieverbrauch_zeroB.csv',
+    STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_ZERO_C = 'kpi-energie-1_bruttoenergieverbrauch_zeroC.csv',
+    STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_BASIS = 'kpi-energie-2_endenergieverbrauch_Basis.csv',
+    STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_WWB = 'kpi-energie-2_endenergieverbrauch_WWB.csv',
+    STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_ZERO_A = 'kpi-energie-2_endenergieverbrauch_zeroA.csv',
+    STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_ZERO_B = 'kpi-energie-2_endenergieverbrauch_zeroB.csv',
+    STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_ZERO_C = 'kpi-energie-2_endenergieverbrauch_zeroC.csv',
     STROM_SPARZIEL_ZIEL_V4 = 'kpi-strom-3_sparziel_ziel_V4.csv',
     STROM_SPARZIEL_ZIEL_V5 = 'kpi-strom-3_sparziel_ziel_V5.csv',
     STROM_SPARZIEL_AKTUELLE_EINSPARUNG_V4 = 'kpi-strom-3_sparziel_aktuelle_einsparung_V4.csv',
@@ -22,6 +32,12 @@ export enum SourceFiles {
     STROM_KKW_PRODUKTION_FR_V1 = 'kpi-strom-6_kkw_produktion_FR_V1.csv',
     STROM_KKW_PRODUKTION_AUSFAELLE_V1 = 'kpi-strom-6_kkw-outages.csv',
     STROM_KKW_PRODUKTION_VERFUEGBARKEIT = 'kpi-strom-6_kkw-availability.csv',
+    STROM_ENTKOPPELUNG_ENDENERGIEVERBRAUCH_BIP = 'kpi-energie-4_entkoppelung.csv',
+    STROM_PRODUKTION_PV = 'kpi-strom-5_produktion_pv.csv',
+    STROM_PRODUKTION_PV_TREND = 'kpi-strom-5_produktion_pv_results.csv',
+    STROM_WINTERPRODUKTION_TREND = 'kpi-strom-5_winterproduktion-summeImportExport_v2.csv',
+    STROM_WINTERPRODUKTION_IMPORT_EXPORT = 'kpi-strom-5_winterproduktion-aggregiert.csv',
+    STROM_WINTERPRODUKTION_EINZELNE_ENERGIETRAEGER = 'kpi-strom-5_winterproduktion-einzeln.csv',
 
     GAS_SPARZIEL_AKTUELLE_EINSPARUNG_V4 = 'kpi-gas-3_gassparziel_aktuelle_einsparung_V4.csv',
     GAS_SPARZIEL_AKTUELLE_EINSPARUNG_V5 = 'kpi-gas-3_gassparziel_aktuelle_einsparung_V5.csv',
@@ -80,6 +96,26 @@ export const RoutingFunctions: { [key in SourceFiles]: string } = {
         'data-processing-strom-verbrauch-endverbrauch-v2',
     [SourceFiles.STROM_VERBRAUCH_LANDESVERBRAUCH_VERGLEICH_V2]:
         'data-processing-strom-landesverbrauch-vergleich-v2',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_BASIS]:
+        'data-processing-strom-bruttoenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_WWB]:
+        'data-processing-strom-bruttoenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_ZERO_A]:
+        'data-processing-strom-bruttoenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_ZERO_B]:
+        'data-processing-strom-bruttoenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_BRUTTOENERGIEVERBRAUCH_ZERO_C]:
+        'data-processing-strom-bruttoenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_BASIS]:
+        'data-processing-strom-endenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_WWB]:
+        'data-processing-strom-endenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_ZERO_A]:
+        'data-processing-strom-endenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_ZERO_B]:
+        'data-processing-strom-endenergieverbrauch',
+    [SourceFiles.STROM_ENERGIEVERBRAUCH_ENDENERGIEVERBRAUCH_ZERO_C]:
+        'data-processing-strom-endenergieverbrauch',
     [SourceFiles.STROM_SPARZIEL_ZIEL_V4]:
         'data-processing-strom-sparziel-ziel-v4',
     [SourceFiles.STROM_SPARZIEL_ZIEL_V5]:
@@ -108,6 +144,18 @@ export const RoutingFunctions: { [key in SourceFiles]: string } = {
         'data-processing-strom-kkw-ausfaelle-v1',
     [SourceFiles.STROM_KKW_PRODUKTION_VERFUEGBARKEIT]:
         'data-processing-strom-kkw-verfuegbarkeit',
+    [SourceFiles.STROM_ENTKOPPELUNG_ENDENERGIEVERBRAUCH_BIP]:
+        'data-processing-strom-entkoppelung-endenergieverbrauch-bip',
+    [SourceFiles.STROM_PRODUKTION_PV]:
+        'data-processing-strom-produktion-pv',
+    [SourceFiles.STROM_PRODUKTION_PV_TREND]:
+        'data-processing-strom-produktion-pv-trend',
+    [SourceFiles.STROM_WINTERPRODUKTION_TREND]:
+        'data-processing-strom-winterproduktion-trend',
+    [SourceFiles.STROM_WINTERPRODUKTION_IMPORT_EXPORT]:
+        'data-processing-strom-winterproduktion-import-export',
+    [SourceFiles.STROM_WINTERPRODUKTION_EINZELNE_ENERGIETRAEGER]:
+        'data-processing-strom-winterproduktion-einzeln',
 
     [SourceFiles.GAS_FUELLSTAND_GASSPEICHER_V2]:
         'data-processing-fuellstand-gasspeicher-v2',

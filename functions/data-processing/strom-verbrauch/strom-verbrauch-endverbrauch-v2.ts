@@ -10,7 +10,10 @@ import { SourceFiles } from '/opt/nodejs/source-files';
 import { getCSVFileFromS3 } from '/opt/nodejs/storage/s3-requests';
 import { Context, S3Event } from 'aws-lambda';
 
-export const handler = async (event: S3Event, context: Context): Promise<any> => {
+export const handler = async (
+    event: S3Event,
+    context: Context
+): Promise<any> => {
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
     console.log(`Context: ${JSON.stringify(context, null, 2)}`);
 
@@ -18,10 +21,11 @@ export const handler = async (event: S3Event, context: Context): Promise<any> =>
 };
 
 const processStromVerbrauchEndverbrauch = async () => {
-    const records = await getCSVFileFromS3<StromVerbrauchEndverbrauchSourceV2>(SourceFiles.STROM_VERBRAUCH_ENDVERBRAUCH_V2);
+    const records = await getCSVFileFromS3<StromVerbrauchEndverbrauchSourceV2>(
+        SourceFiles.STROM_VERBRAUCH_ENDVERBRAUCH_V2
+    );
     const data = map(records);
 
     await deleteAllStromVerbrauchEndverbrauchV2();
     await saveAllStromVerbrauchEndverbrauchV2(data);
-}
-
+};

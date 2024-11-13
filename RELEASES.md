@@ -85,3 +85,14 @@ Hotfix Release for Dashboard Strom Verbrauch
 - Mehr-/Minderverbrauch Strom
 - Mehr-/Minderverauch Gas
 - App Release
+
+## v3.0.1 - 15.02.2024
+
+- Fix Fuellungsgrad Speicherseen Data
+
+## v4.0.0 - 31.10.2024
+
+- Added Energieverbrauch
+- Added Produktion Photovoltaik
+- Added Winterbilanz Strom
+- Added zoom functionality

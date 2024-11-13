@@ -392,3 +392,124 @@ functions:
     layers:
       - !Ref CommonDashlayerLambdaLayer
       - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-energieverbrauch-bruttoenergieverbrauch:
+    handler: dist/functions/api/strom/strom-energieverbrauch/get-strom-energieverbrauch-bruttoenergieverbrauch.handler
+    name: ${sls:stage}-api-get-strom-energieverbrauch-bruttoenergieverbrauch
+    description: Provides API to access data for Strom Energieverbrauch Brutoennergieverbrauch
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-energieverbrauch-bruttoenergieverbrauch
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-energieverbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-energieverbrauch-endenergieverbrauch:
+    handler: dist/functions/api/strom/strom-energieverbrauch/get-strom-energieverbrauch-endenergieverbrauch.handler
+    name: ${sls:stage}-api-get-strom-energieverbrauch-endenergieverbrauch
+    description: Provides API to access data for Strom Energieverbrauch Endenergieverbrauch
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/strom-energieverbrauch-endenergieverbrauch
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-energieverbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-entkoppelung-endenergieverbrauch-bip:
+    handler: dist/functions/api/strom/strom-entkoppelung-endenergieverbrauch-bip/get-strom-entkoppelung-endenergieverbrauch-bip.handler
+    name: ${sls:stage}-api-get-strom-entkoppelung-endenergieverbrauch-bip
+    description: Provides API to access data for Strom Entkoppelung Endenergieverbrauch und BIP
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/entkoppelung-endenergieverbrauch-bip
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-entkoppelung-endenergieverbrauch-bip/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-produktion-pv:
+    handler: dist/functions/api/strom/strom-produktion-pv/get-strom-produktion-pv.handler
+    name: ${sls:stage}-api-get-strom-produktion-pv
+    description: Provides API to access data for Strom PV Produktion
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/produktion-pv
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-produktion-pv/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-produktion-pv-trend:
+    handler: dist/functions/api/strom/strom-produktion-pv/get-strom-produktion-pv-trend.handler
+    name: ${sls:stage}-api-get-strom-produktion-pv-trend
+    description: Provides API to access data for Strom PV Produktion Trend
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/produktion-pv-trend
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-produktion-pv/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+
+  api-strom-winterproduktion-trend:
+    handler: dist/functions/api/strom/strom-winterproduktion/get-strom-winterproduktion-trend.handler
+    name: ${sls:stage}-api-get-strom-winterproduktion-trend
+    description: Provides API to access data for Strom Winterproduktion Trend
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/winterproduktion-trend
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-winterproduktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-winterproduktion-import-export:
+    handler: dist/functions/api/strom/strom-winterproduktion/get-strom-winterproduktion-import-export.handler
+    name: ${sls:stage}-api-get-strom-winterproduktion-import-export
+    description: Provides API to access data for Strom Winterproduktion Import Export
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/winterproduktion-import-export
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-winterproduktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  api-strom-winterproduktion-einzeln:
+    handler: dist/functions/api/strom/strom-winterproduktion/get-strom-winterproduktion-einzelne-energietraeger.handler
+    name: ${sls:stage}-api-get-strom-winterproduktion-einzeln
+    description: Provides API to access data for Strom Winterproduktion Energietraeger einzeln
+    events:
+      - httpApi:
+          method: GET
+          path: /api/strom/winterproduktion-einzelne-energietraeger
+    package:
+      patterns:
+        - dist/functions/api/strom/strom-winterproduktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer

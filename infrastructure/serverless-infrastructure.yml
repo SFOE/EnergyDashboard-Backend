@@ -65,6 +65,14 @@ resources: # CloudFormation template syntax from here on.
       Type: AWS::Serverless::SimpleTable
       Properties:
         TableName: ${sls:stage}-strom-verbrauch-landesverbrauch-vergleich-v2
+    StromEnergieverbrauchBruttoenergieverbrauchTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-energieverbrauch-bruttoenergieverbrauch
+    StromEnergieverbrauchEndenergieverbrauchTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-energieverbrauch-endenergieverbrauch
     StromSparzielZielV4Table:
       Type: AWS::Serverless::SimpleTable
       Properties:
@@ -113,6 +121,30 @@ resources: # CloudFormation template syntax from here on.
       Type: AWS::Serverless::SimpleTable
       Properties:
         TableName: ${sls:stage}-strom-kkw-produktion-fr-v1
+    StromEntkoppelungEndenergieverbrauchBIPTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-entkoppelung-endenergieverbrauch-bip
+    StromProduktionPvTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-produktion-pv
+    StromProduktionPvTrendTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-produktion-pv-trend
+    StromWinterproduktionTrendTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-winterproduktion-trend
+    StromWinterproduktionImportExportTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-winterproduktion-import-export
+    StromWinterproduktionEinzelneEnergietraegerTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        TableName: ${sls:stage}-strom-winterproduktion-einzelne-energietraeger
 
     # Tables Strom without default values
     StromKkwAusfaelleTablePatch1:

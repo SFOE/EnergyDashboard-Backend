@@ -267,6 +267,94 @@ functions:
       - !Ref CommonDashlayerLambdaLayer
       - !Ref NodeDashmodulesDashlayerLambdaLayer
 
+  data-processing-strom-energieverbrauch-bruttoenergieverbrauch:
+    handler: dist/functions/data-processing/strom-energieverbrauch/strom-energieverbrauch-bruttoenergieverbrauch.handler
+    name: ${sls:stage}-data-processing-strom-bruttoenergieverbrauch
+    description: Processes data for Strom Energieverbrauch Bruttoenergieverbrauch
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-energieverbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-energieverbrauch-endenergieverbrauch:
+    handler: dist/functions/data-processing/strom-energieverbrauch/strom-energieverbrauch-endenergieverbrauch.handler
+    name: ${sls:stage}-data-processing-strom-endenergieverbrauch
+    description: Processes data for Strom Energieverbrauch Endenergieverbrauch
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-energieverbrauch/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-entkoppelung-endenergieverbrauch-bip:
+    handler: dist/functions/data-processing/strom-entkoppelung-endenergieverbrauch-bip/strom-entkoppelung-endenergieverbrauch-bip.handler
+    name: ${sls:stage}-data-processing-strom-entkoppelung-endenergieverbrauch-bip
+    description: Processes data for Strom Entkoppelung Endenergieverbrauch und BIP
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-entkoppelung-endenergieverbrauch-bip/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-produktion-pv:
+    handler: dist/functions/data-processing/strom-produktion-pv/strom-produktion-pv.handler
+    name: ${sls:stage}-data-processing-strom-produktion-pv
+    description: Processes data for Strom PV Produktion
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-produktion-pv/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-produktion-pv-trend:
+    handler: dist/functions/data-processing/strom-produktion-pv/strom-produktion-pv-trend.handler
+    name: ${sls:stage}-data-processing-strom-produktion-pv-trend
+    description: Processes data for Strom PV Produktion Trend
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-produktion-pv/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-winterproduktion-trend:
+    handler: dist/functions/data-processing/strom-winterproduktion/strom-winterproduktion-trend.handler
+    name: ${sls:stage}-data-processing-strom-winterproduktion-trend
+    description: Processes data for Strom Winterproduktion Trend
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-winterproduktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-winterproduktion-import-export:
+    handler: dist/functions/data-processing/strom-winterproduktion/strom-winterproduktion-import-export.handler
+    name: ${sls:stage}-data-processing-strom-winterproduktion-import-export
+    description: Processes data for Strom Winterproduktion Import Export
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-winterproduktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
+  data-processing-strom-winterproduktion-einzeln:
+    handler: dist/functions/data-processing/strom-winterproduktion/strom-winterproduktion-einzelne-energietraeger.handler
+    name: ${sls:stage}-data-processing-strom-winterproduktion-einzeln
+    description: Processes data for Strom Winterproduktion einzelne Energietraeger
+    package:
+      patterns:
+        - dist/functions/data-processing/strom-winterproduktion/*
+    layers:
+      - !Ref CommonDashlayerLambdaLayer
+      - !Ref NodeDashmodulesDashlayerLambdaLayer
+
   data-processing-strom-sparziel-ziel-v4:
     handler: dist/functions/data-processing/strom-sparziel/strom-sparziel-ziel-v4.handler
     name: ${sls:stage}-data-processing-strom-sparziel-ziel-v4

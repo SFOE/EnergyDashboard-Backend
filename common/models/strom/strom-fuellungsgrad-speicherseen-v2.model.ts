@@ -71,7 +71,7 @@ const mapRecord = (
     fiveYearMax: parseFloat(record['5y_Max']),
     fiveYearMittelwert: parseFloat(record['5y_Mittelwert']),
     differenzMittelwert: parseFloatOrNullForNA(record.Differenz_Mittelwert),
-    differenzMin: parseIntOrNullForNA(record.Differenz_Min),
+    differenzMin: parseFloatOrNullForNA(record.Differenz_Min),
     differenzMax: parseFloatOrNullForNA(record.Differenz_Max),
     historicalMin: parseFloatOrNullForNA(record.hist_min),
     historicalMinWithReserves: parseFloatOrNullForNA(

@@ -1,4 +1,7 @@
-import { DashboardEntryApi, DashboardEntryWithoutTrendApi } from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
+import {
+    DashboardEntryApi,
+    DashboardEntryWithoutTrendApi
+} from '/opt/nodejs/api/dashboard/dashboard-entry.api-model';
 
 export interface DashboardStromApi {
     aktuellerVerbrauch: DashboardEntryApi;
@@ -10,4 +13,7 @@ export interface DashboardStromApi {
     nettoExport: DashboardEntryApi;
     nettoImportExport: DashboardEntryApi;
     aktuelleGesamteinsparung: DashboardEntryApi;
+    endenergieverbrauch: DashboardEntryApi;
+    produktionPhotovoltaik: DashboardEntryApi;
+    produktionWinterproduktion: DashboardEntryApi;
 }
